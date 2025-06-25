@@ -15,7 +15,6 @@ RUN useradd -m appuser
 RUN mkdir -p /app/data && chown -R appuser:appuser /app
 
 COPY ./app ./app
-COPY .env .env
 RUN chown -R appuser:appuser /app
 
 USER appuser
