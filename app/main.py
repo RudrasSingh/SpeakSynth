@@ -12,7 +12,9 @@ from fastapi.middleware.cors import CORSMiddleware  # Add this import
 app = FastAPI(
     title="SpeakSynth - Text-to-Speech API",
     description="🎙️ Transform your words into lifelike voice with SpeakSynth, powered by AI.",
-    version="1.0.0"
+    version="1.0.0", 
+    docs_url=None, 
+    redoc_url=None
 )
 
 # CORS middleware configuration
