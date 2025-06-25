@@ -5,12 +5,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Playground | SpeakSynth</title>
-    <!-- Modern Google Fonts -->
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+    <link rel="icon" href="assets/favicon.ico">
+    <link rel="manifest" href="assets/site.webmanifest">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
 
@@ -282,212 +290,24 @@
         </div>
     </footer>
 
+    <!-- Link to script.js with all API functions -->
+    <script src="script.js"></script>
     <script>
-        // Mobile menu functionality
-        document.getElementById('menuToggle').addEventListener('click', function() {
-            const mobileMenu = document.getElementById('mobileMenu');
-            mobileMenu.classList.toggle('hidden');
-        });
-        
-        // Check for API key
         document.addEventListener('DOMContentLoaded', function() {
-            const apiKey = localStorage.getItem('speaksynth_api_key');
-            if (!apiKey) {
-                document.getElementById('apiKeyWarning').classList.remove('hidden');
-            }
+            // Initialize playground functionality - this will handle all necessary setup
+            initPlayground();
             
-            // Character counter
-            const textarea = document.getElementById('playgroundText');
-            const charCount = document.getElementById('charCount');
-            
-            function updateCharCount() {
-                const count = textarea.value.length;
-                charCount.textContent = `${count}/500 characters`;
-                
-                if (count > 500) {
-                    charCount.classList.add('text-red-500');
-                } else {
-                    charCount.classList.remove('text-red-500');
-                }
-            }
-            
-            textarea.addEventListener('input', updateCharCount);
-            updateCharCount(); // Initial count
-            
-            // Reset button
-            document.getElementById('resetTextBtn').addEventListener('click', function() {
-                textarea.value = '';
-                updateCharCount();
-            });
-            
-            // Format switching
-            const wavBtn = document.getElementById('wavFormatBtn');
-            const opusBtn = document.getElementById('opusFormatBtn');
-            let currentFormat = 1; // 1 for WAV, 2 for OPUS
-            
-            wavBtn.addEventListener('click', function() {
-                wavBtn.classList.remove('bg-white', 'text-gray-600');
-                wavBtn.classList.add('bg-blue-500', 'text-white');
-                opusBtn.classList.remove('bg-blue-500', 'text-white');
-                opusBtn.classList.add('bg-white', 'text-gray-600');
-                currentFormat = 1;
-            });
-            
-            opusBtn.addEventListener('click', function() {
-                opusBtn.classList.remove('bg-white', 'text-gray-600');
-                opusBtn.classList.add('bg-blue-500', 'text-white');
-                wavBtn.classList.remove('bg-blue-500', 'text-white');
-                wavBtn.classList.add('bg-white', 'text-gray-600');
-                currentFormat = 2;
-            });
-            
-            // Audio duration calculation
-            const audioElement = document.getElementById('playgroundAudio');
-            audioElement.addEventListener('loadedmetadata', function() {
-                const duration = audioElement.duration;
-                const minutes = Math.floor(duration / 60).toString().padStart(2, '0');
-                const seconds = Math.floor(duration % 60).toString().padStart(2, '0');
-                document.getElementById('audioDuration').textContent = `${minutes}:${seconds}`;
-            });
-            
-            // Play/Pause functionality
-            const playPauseBtn = document.getElementById('playPauseBtn');
-            const playIcon = document.getElementById('playIcon');
-            const pauseIcon = document.getElementById('pauseIcon');
-            const progressBar = document.getElementById('progressBar');
-            const currentTime = document.getElementById('currentTime');
-            
-            playPauseBtn.addEventListener('click', function() {
-                if (audioElement.paused) {
-                    audioElement.play();
-                    playIcon.classList.add('hidden');
-                    pauseIcon.classList.remove('hidden');
-                } else {
-                    audioElement.pause();
-                    playIcon.classList.remove('hidden');
-                    pauseIcon.classList.add('hidden');
-                }
-            });
-            
-            audioElement.addEventListener('timeupdate', function() {
-                const percent = (audioElement.currentTime / audioElement.duration) * 100;
-                progressBar.style.width = percent + '%';
-                
-                const mins = Math.floor(audioElement.currentTime / 60).toString().padStart(2, '0');
-                const secs = Math.floor(audioElement.currentTime % 60).toString().padStart(2, '0');
-                currentTime.textContent = `${mins}:${secs}`;
-            });
-            
-            audioElement.addEventListener('ended', function() {
-                playIcon.classList.remove('hidden');
-                pauseIcon.classList.add('hidden');
-                progressBar.style.width = '0%';
-                currentTime.textContent = '00:00';
-            });
-            
-            progressBar.parentElement.addEventListener('click', function(e) {
-                const clickPosition = (e.offsetX / this.offsetWidth);
-                audioElement.currentTime = clickPosition * audioElement.duration;
-            });
-            
-            // Synthesize speech
-            document.getElementById('synthesizePlaygroundBtn').addEventListener('click', function() {
-                const text = textarea.value;
-                if (!text.trim()) return;
-                
-                const apiKey = localStorage.getItem('speaksynth_api_key');
-                if (!apiKey) {
-                    alert("You need an API key first. Generate one on the dashboard.");
-                    return;
-                }
-                
-                // Show loading state
-                document.getElementById('initialState').classList.add('hidden');
-                document.getElementById('playerState').classList.add('hidden');
-                document.getElementById('errorState').classList.add('hidden');
-                document.getElementById('loadingState').classList.remove('hidden');
-                
-                // Prepare API call parameters
-                const voiceModel = document.getElementById('voiceModel').value;
-                const requestData = {
-                    text: text,
-                    voice_id: voiceModel,
-                    format: currentFormat
-                };
-                
-                // Simulate API call (replace with actual API call in production)
-                setTimeout(function() {
-                    // Hide loading state
-                    document.getElementById('loadingState').classList.add('hidden');
-                    
-                    try {
-                        // Show player state
-                        document.getElementById('playerState').classList.remove('hidden');
-                        
-                        // For demo, using a sample audio file
-                        const audioPlayer = document.getElementById('playgroundAudio');
-                        audioPlayer.src = "https://audio-samples.github.io/samples/mp3/blizzard_biased/sample-1.mp3";
-                        
-                        // Reset player UI to initial state
-                        document.getElementById('playIcon').classList.remove('hidden');
-                        document.getElementById('pauseIcon').classList.add('hidden');
-                        document.getElementById('progressBar').style.width = '0%';
-                        document.getElementById('currentTime').textContent = '00:00';
-                        
-                        // Load audio to get duration
-                        audioPlayer.load();
-                        
-                        // Update usage
-                        const usageCount = Math.floor(Math.random() * 50);
-                        const percentage = (usageCount / 50) * 100;
-                        document.getElementById('usageBar').style.width = `${percentage}%`;
-                        document.getElementById('usageCount').textContent = `${usageCount}/50 requests today`;
-                        
-                        // Save to request history
-                        saveRequestToHistory({
-                            text: text.substring(0, 30),
-                            textLength: text.length,
-                            voice_id: voiceModel,
-                            format: currentFormat,
-                            status: 'success'
-                        });
-                        
-                    } catch (error) {
-                        // Show error state
-                        document.getElementById('errorState').classList.remove('hidden');
-                        document.getElementById('errorMessage').textContent = "Failed to generate speech. Please try again.";
-                        
-                        // Log error for debugging
-                        console.error("Speech synthesis error:", error);
-                    }
-                    
-                }, 1500);
-            });
-            
-            // Try again button
-            document.getElementById('tryAgainBtn').addEventListener('click', function() {
-                document.getElementById('errorState').classList.add('hidden');
-                document.getElementById('initialState').classList.remove('hidden');
-            });
+            // The initPlayground() function from script.js handles:
+            // - API key checking
+            // - Character counting
+            // - Reset button functionality
+            // - Format switching (WAV/OPUS)
+            // - Audio player setup
+            // - Synthesize button + API call
+            // - Loading states
+            // - Error handling
+            // - Usage statistics display
         });
-        
-        // Save request to history
-        function saveRequestToHistory(request) {
-            // Get existing requests or initialize empty array
-            const requests = JSON.parse(localStorage.getItem('speaksynth_requests')) || [];
-            
-            // Add timestamp to request
-            request.timestamp = new Date().toISOString();
-            
-            // Add to beginning of array
-            requests.unshift(request);
-            
-            // Keep only the last 50 requests
-            const trimmedRequests = requests.slice(0, 50);
-            
-            // Save back to localStorage
-            localStorage.setItem('speaksynth_requests', JSON.stringify(trimmedRequests));
-        }
     </script>
 </body>
 

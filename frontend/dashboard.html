@@ -5,19 +5,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Insights | SpeakSynth</title>
-  <!-- Modern Google Fonts -->
+  <!-- Favicon -->
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+  <link rel="icon" href="assets/favicon.ico">
+  <link rel="manifest" href="assets/site.webmanifest">
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
   <link rel="stylesheet" href="styles.css">
 </head>
 
 <body class="bg-white text-gray-800 min-h-screen flex flex-col font-sans">
   <!-- Navigation -->
-  <nav
-    class="flex justify-between items-center p-6 lg:px-16 border-b border-gray-100 bg-white sticky top-0 z-50 shadow-sm">
+  <nav class="flex justify-between items-center p-6 lg:px-16 border-b border-gray-100 bg-white sticky top-0 z-50 shadow-sm">
     <div class="flex items-center">
       <div class="logo-container mr-2">
         <div class="logo-icon">
@@ -64,10 +71,15 @@
         </p>
       </header>
 
+      <!-- Status Message for Debugging/Feedback -->
+      <div id="statusMessage" class="hidden mb-4 p-4 rounded-lg bg-green-50 text-green-700 border border-green-200">
+        Operation successful!
+      </div>
+
       <!-- No API Key Section -->
       <div id="noApiKeySection" class="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 mb-8 flex flex-col items-center justify-center">
         <div class="text-center max-w-md">
-          <div class="text-blue-500 mb-6">
+          <div class="text-blue-500 mb-6 flex justify-center">
             <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
               <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
@@ -87,8 +99,8 @@
       <div id="dashboardContent" class="hidden">
         <!-- API Key Card -->
         <div class="bg-white rounded-2xl border border-blue-100 shadow-sm p-8 mb-8">
-          <div class="flex items-center mb-6">
-            <div class="text-blue-500 mr-4">
+          <div class="flex flex-col sm:flex-row sm:items-center mb-6">
+            <div class="text-blue-500 mr-4 mb-4 sm:mb-0">
               <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                 <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
@@ -100,17 +112,17 @@
             </div>
           </div>
           
-          <div class="bg-blue-50 rounded-xl p-8 border border-blue-100">
+          <div class="bg-blue-50 rounded-xl p-6 sm:p-8 border border-blue-100">
             <div class="flex flex-wrap items-center justify-between">
               <div class="w-full lg:w-auto flex flex-col sm:flex-row mb-6 lg:mb-0">
                 <div class="relative flex-grow mb-3 sm:mb-0">
                   <input id="apiKeyDisplay" type="text" readonly class="w-full lg:w-96 bg-white/80 border border-blue-200 rounded-lg py-3 px-4 font-mono text-base" value="Loading your API key...">
                   <button id="showHideKeyBtn" class="absolute inset-y-0 right-0 px-4 flex items-center text-gray-500 hover:text-blue-500 transition">
-                    <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden">
+                    <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                       <circle cx="12" cy="12" r="3"></circle>
                     </svg>
-                    <svg id="eyeOffIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg id="eyeOffIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden">
                       <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
                       <line x1="1" y1="1" x2="23" y2="23"></line>
                     </svg>
@@ -135,8 +147,8 @@
         
         <!-- Usage Stats Card -->
         <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 mb-8">
-          <div class="flex items-center mb-6">
-            <div class="text-blue-500 mr-4">
+          <div class="flex flex-col sm:flex-row sm:items-center mb-6">
+            <div class="text-blue-500 mr-4 mb-4 sm:mb-0">
               <svg class="w-9 h-9" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
               </svg>
@@ -147,7 +159,7 @@
             </div>
           </div>
           
-          <div class="bg-gray-50 rounded-xl p-8 border border-gray-100">
+          <div class="bg-gray-50 rounded-xl p-6 sm:p-8 border border-gray-100">
             <div class="flex flex-col items-center">
               <div class="w-40 h-40 relative mb-6">
                 <svg class="w-full h-full" viewBox="0 0 36 36">
@@ -179,9 +191,9 @@
               </div>
               
               <div class="mt-6 pt-6 border-t border-gray-200 w-full">
-                <div class="flex items-center justify-between">
+                <div class="flex flex-wrap items-center justify-between">
                   <span class="bg-blue-100 text-blue-800 text-sm py-1.5 px-3 rounded-lg font-medium">Free Tier</span>
-                  <span id="usageDate" class="text-gray-600"></span>
+                  <span id="usageDate" class="text-gray-600 mt-2 sm:mt-0"></span>
                 </div>
               </div>
             </div>
@@ -189,11 +201,11 @@
         </div>
       
         <!-- API Usage Guide -->
-        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 sm:p-8">
           <h2 class="text-2xl font-semibold mb-6 font-display text-gray-800">Quick API Guide</h2>
           
-          <div class="bg-gray-50 rounded-xl p-6 border border-gray-100 overflow-x-auto">
-            <pre class="text-sm text-gray-700 font-mono"><code>curl -X POST https://api.speaksynth.com/api/v1/synthesize \
+          <div class="bg-gray-50 rounded-xl p-4 sm:p-6 border border-gray-100 overflow-x-auto">
+            <pre class="text-sm text-gray-700 font-mono"><code>curl -X POST https://speaksynth.onrender.com/speaksynth/api/v1/synthesize \
   -H "Content-Type: application/json" \
   -H "X-API-Key: <span class="text-blue-600">YOUR_API_KEY</span>" \
   -d '{
@@ -253,13 +265,29 @@
     </div>
   </footer>
 
+  <!-- Define API_BASE_URL if script.js is unavailable -->
+  <script>
+    // Ensure API_BASE_URL is defined if script.js fails to load
+    var API_BASE_URL = API_BASE_URL || "https://speaksynth.onrender.com";
+  </script>
+
+  <!-- Link to script.js -->
+  <script src="script.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
+      // Make sure API_BASE_URL is available
+      if (typeof API_BASE_URL === 'undefined') {
+        console.warn("API_BASE_URL not found in script.js, using default");
+        window.API_BASE_URL = "https://speaksynth.onrender.com";
+      }
+
       // Mobile menu toggle
       document.getElementById('menuToggle').addEventListener('click', function() {
         const mobileMenu = document.getElementById('mobileMenu');
         mobileMenu.classList.toggle('hidden');
       });
+      
+      console.log("Dashboard page loaded", API_BASE_URL);
       
       // Check for API key in localStorage
       const apiKey = localStorage.getItem('speaksynth_api_key');
@@ -275,7 +303,7 @@
         updateApiKeyDisplay(apiKey);
         
         // Fetch usage data
-        fetchUsageData();
+        fetchUsageData(apiKey);
       }
       
       // Generate API Key Button
@@ -288,14 +316,27 @@
         const apiKey = localStorage.getItem('speaksynth_api_key');
         if (apiKey) {
           navigator.clipboard.writeText(apiKey).then(function() {
+            showStatus("API key copied to clipboard!", "success");
             const originalText = this.textContent;
             this.textContent = 'Copied!';
             setTimeout(() => {
               this.textContent = originalText;
             }, 2000);
-          }.bind(this));
+          }.bind(this)).catch(function() {
+            showStatus("Failed to copy API key", "error");
+          });
         }
       });
+      
+      // Fix eye icon initial state
+      const eyeIcon = document.getElementById('eyeIcon');
+      const eyeOffIcon = document.getElementById('eyeOffIcon');
+      
+      if (eyeIcon && eyeOffIcon) {
+        // Start with showing the eye (since we're showing masked key)
+        eyeIcon.classList.remove('hidden');
+        eyeOffIcon.classList.add('hidden');
+      }
       
       // Toggle API key visibility
       document.getElementById('showHideKeyBtn').addEventListener('click', function() {
@@ -307,13 +348,13 @@
         if (apiKeyDisplay.value === apiKey) {
           // Mask the API key
           updateApiKeyDisplay(apiKey, true);
-          eyeIcon.classList.add('hidden');
-          eyeOffIcon.classList.remove('hidden');
+          eyeIcon.classList.remove('hidden');
+          eyeOffIcon.classList.add('hidden');
         } else {
           // Show the API key
           apiKeyDisplay.value = apiKey;
-          eyeIcon.classList.remove('hidden');
-          eyeOffIcon.classList.add('hidden');
+          eyeIcon.classList.add('hidden');
+          eyeOffIcon.classList.remove('hidden');
         }
       });
       
@@ -325,6 +366,35 @@
       });
     });
     
+    // Show status message
+    function showStatus(message, type = 'success') {
+      const statusMessage = document.getElementById('statusMessage');
+      
+      // Remove existing classes
+      statusMessage.classList.remove('bg-green-50', 'text-green-700', 'border-green-200');
+      statusMessage.classList.remove('bg-red-50', 'text-red-700', 'border-red-200');
+      statusMessage.classList.remove('bg-blue-50', 'text-blue-700', 'border-blue-200');
+      
+      // Add classes based on type
+      if (type === 'error') {
+        statusMessage.classList.add('bg-red-50', 'text-red-700', 'border-red-200');
+      } else if (type === 'info') {
+        statusMessage.classList.add('bg-blue-50', 'text-blue-700', 'border-blue-200');
+      } else {
+        // Success is default
+        statusMessage.classList.add('bg-green-50', 'text-green-700', 'border-green-200');
+      }
+      
+      // Set message and show
+      statusMessage.textContent = message;
+      statusMessage.classList.remove('hidden');
+      
+      // Hide after 3 seconds
+      setTimeout(() => {
+        statusMessage.classList.add('hidden');
+      }, 3000);
+    }
+    
     // Generate API Key
     async function generateApiKey() {
       const generateKeyBtn = document.getElementById('generateKeyBtn');
@@ -332,11 +402,16 @@
       generateKeyBtn.textContent = 'Generating...';
       
       try {
-        const response = await fetch('/speaksynth/api/v1/register', {
-          method: 'POST'
+        // Use the API_BASE_URL from script.js
+        const response = await fetch(`${API_BASE_URL}/speaksynth/api/v1/register`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
         });
         
         const data = await response.json();
+        console.log("API key response:", data);
         
         if (data.api_key) {
           // Save API key to localStorage
@@ -350,15 +425,18 @@
           updateApiKeyDisplay(data.api_key);
           
           // Fetch usage data
-          fetchUsageData();
+          fetchUsageData(data.api_key);
+          
+          // Show success message
+          showStatus('API key generated successfully!');
         } else {
-          alert('Error: ' + data.message || 'Failed to generate API key');
+          showStatus(data.detail || 'Failed to generate API key', 'error');
           generateKeyBtn.disabled = false;
           generateKeyBtn.textContent = 'Generate API Key';
         }
       } catch (error) {
         console.error('Error generating API key:', error);
-        alert('Error generating API key. Please try again.');
+        showStatus('Error connecting to the API. Please try again.', 'error');
         
         generateKeyBtn.disabled = false;
         generateKeyBtn.textContent = 'Generate API Key';
@@ -366,16 +444,30 @@
     }
     
     // Fetch usage data
-    async function fetchUsageData() {
+    async function fetchUsageData(apiKey) {
       try {
-        const response = await fetch('/speaksynth/api/v1/usage');
+        showStatus('Fetching usage data...', 'info');
+        // Use the API_BASE_URL from script.js
+        const response = await fetch(`${API_BASE_URL}/speaksynth/api/v1/usage`, {
+          headers: {
+            'X-API-Key': apiKey
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`API responded with status ${response.status}`);
+        }
+        
         const data = await response.json();
+        console.log("Usage data:", data);
         
         if (data) {
           updateUsageDisplay(data.daily_usage, data.daily_limit, data.remaining);
+          showStatus('Usage data updated');
         }
       } catch (error) {
         console.error('Error fetching usage data:', error);
+        showStatus('Could not fetch usage data', 'error');
         // For development: show demo data if API is unavailable
         updateUsageDisplay(12, 50, 38);
       }
@@ -416,5 +508,4 @@
     }
   </script>
 </body>
-
 </html>

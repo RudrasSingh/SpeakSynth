@@ -5,7 +5,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SpeakSynth | Celebrity Voice Text-to-Speech API</title>
+    <title>SpeakSynth | Text-to-Speech API</title>
+    
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+    <link rel="icon" href="assets/favicon.ico">
+    <link rel="manifest" href="assets/site.webmanifest">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -348,17 +356,24 @@
                         </div>
                     </div>
                     <div class="mt-6 text-gray-700">
-                        Ideal for commercials, song covers, and content that needs a youthful, energetic tone with exceptional clarity.
+                        Bright, expressive, and versatile—ideal for narrations, explainers, and projects that need a clear, premium voice presence.
                     </div>
-                    <div class="mt-6 pt-4 border-t border-gray-100 flex items-center">
-                        <div class="sound-wave" style="height: 24px;">
-                            <div class="bar" style="height: 14px; background: #db2777;"></div>
-                            <div class="bar" style="height: 20px; background: #db2777;"></div>
-                            <div class="bar" style="height: 18px; background: #db2777;"></div>
-                            <div class="bar" style="height: 12px; background: #db2777;"></div>
-                            <div class="bar" style="height: 16px; background: #db2777;"></div>
+                    <div class="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="sound-wave" style="height: 24px;">
+                                <div class="bar" style="height: 14px; background: #db2777;"></div>
+                                <div class="bar" style="height: 20px; background: #db2777;"></div>
+                                <div class="bar" style="height: 18px; background: #db2777;"></div>
+                                <div class="bar" style="height: 12px; background: #db2777;"></div>
+                                <div class="bar" style="height: 16px; background: #db2777;"></div>
+                            </div>
+                            <span class="ml-3 text-sm text-gray-600">Preview</span>
                         </div>
-                        <span class="ml-3 text-sm text-gray-600">Preview</span>
+                        
+                        <!-- Stop Button (hidden by default) -->
+                        <button id="stopPreviewBtn" class="hidden px-2 py-1 bg-gray-100 hover:bg-gray-200 text-sm rounded text-gray-700 transition">
+                            Stop
+                        </button>
                     </div>
                 </div>
                 
@@ -568,31 +583,96 @@
         </div>
     </footer>
 
+    <script src="script.js"></script>
     <script>
-        // Mobile menu functionality
-        document.getElementById('menuToggle').addEventListener('click', function() {
-            const mobileMenu = document.getElementById('mobileMenu');
-            mobileMenu.classList.toggle('hidden');
-        });
-        
-        // Add click events for voice cards to play sample audio (only for Sabrina-Style)
-        document.querySelectorAll('.voice-card').forEach(card => {
-            // Check if this card has sound-wave bars (only Sabrina-Style has them)
-            const bars = card.querySelectorAll('.bar');
-            if (bars.length > 0) {
-                card.addEventListener('click', function() {
-                    // In a real implementation, this would play a sample of the voice
-                    // For now, we'll just animate the sound waves
-                    bars.forEach(bar => {
-                        bar.style.animation = 'sound-wave-animation 0.5s infinite ease-in-out';
+        document.addEventListener('DOMContentLoaded', function () {
+            // Mobile menu functionality
+            document.getElementById('menuToggle').addEventListener('click', function () {
+                const mobileMenu = document.getElementById('mobileMenu');
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // Create a shared Audio element
+            const previewAudio = new Audio();
+            
+            // Use local audio file from assets folder
+            const sampleAudioUrl = "assets/speaksynth_output.mp3";
+            
+            // Track if audio is currently playing
+            let isPlaying = false;
+
+            // Add click events for voice cards to play sample audio (only for Sabrina-Style)
+            document.querySelectorAll('.voice-card').forEach(card => {
+                // Check if this card has sound-wave bars (only Sabrina-Style has them)
+                const bars = card.querySelectorAll('.bar');
+                if (bars.length > 0) {
+                    const stopBtn = card.querySelector('#stopPreviewBtn');
+                    
+                    // Play/Stop functionality in one handler
+                    card.addEventListener('click', function (e) {
+                        // If clicked on stop button, stop the audio
+                        if (e.target.id === 'stopPreviewBtn') {
+                            stopAudioPreview(bars, stopBtn);
+                            return;
+                        }
+                        
+                        // If already playing, stop it first
+                        if (isPlaying) {
+                            stopAudioPreview(bars, stopBtn);
+                            return;
+                        }
+                        
+                        // Otherwise, play the audio
+                        isPlaying = true;
+                        
+                        // Use the local audio file
+                        previewAudio.src = sampleAudioUrl;
+                        
+                        // Show stop button
+                        stopBtn.classList.remove('hidden');
+
+                        // Play the audio
+                        previewAudio.play().catch(err => {
+                            console.error("Failed to play audio:", err);
+                            isPlaying = false;
+                            stopBtn.classList.add('hidden');
+                        });
+
+                        // Animate the sound waves while audio plays
+                        bars.forEach(bar => {
+                            bar.style.animation = 'sound-wave-animation 0.5s infinite ease-in-out';
+                        });
+
+                        // Reset animation when audio ends
+                        previewAudio.onended = function () {
+                            stopAudioPreview(bars, stopBtn);
+                        };
                     });
                     
-                    // Reset after 3 seconds
-                    setTimeout(() => {
-                        bars.forEach(bar => {
-                            bar.style.animation = '';
+                    // Separate click handler for stop button to prevent event bubbling
+                    if (stopBtn) {
+                        stopBtn.addEventListener('click', function (e) {
+                            e.stopPropagation(); // Prevent triggering the card's click event
+                            stopAudioPreview(bars, stopBtn);
                         });
-                    }, 3000);
+                    }
+                }
+            });
+            
+            // Function to stop audio preview
+            function stopAudioPreview(bars, stopBtn) {
+                if (!isPlaying) return;
+                
+                isPlaying = false;
+                previewAudio.pause();
+                previewAudio.currentTime = 0;
+                
+                // Hide stop button
+                stopBtn.classList.add('hidden');
+                
+                // Stop animation
+                bars.forEach(bar => {
+                    bar.style.animation = '';
                 });
             }
         });

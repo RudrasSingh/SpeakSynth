@@ -7,11 +7,26 @@ from app.auth import verify_api_key
 from app.ratelimit import enforce_daily_limit
 from app.db import get_db_conn
 from datetime import datetime
+from fastapi.middleware.cors import CORSMiddleware  # Add this import
 
 app = FastAPI(
     title="SpeakSynth - Text-to-Speech API",
     description="🎙️ Transform your words into lifelike voice with SpeakSynth, powered by AI.",
     version="1.0.0"
+)
+
+# CORS middleware configuration
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "https://speaksynth.onrender.com",  # Your production frontend
+        "http://127.0.0.1:5500",           # Common local development server
+        "http://localhost:5500",           # Alternative local development URL
+    ],
+    # enable CORS for all API endpoints
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type", "X-API-Key"],
 )
 
 client = Client("ResembleAI/Chatterbox")
