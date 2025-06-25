@@ -1,0 +1,15 @@
+# FastAPI and server dependencies
+fastapi
+uvicorn
+python-multipart
+
+# AI/ML
+gradio-client
+
+# Audio processing
+ffmpeg-python
+
+# Utilities
+python-dotenv
+requests
+pydantic

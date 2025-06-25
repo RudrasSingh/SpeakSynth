@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpeakSynth Logo</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .logo-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .logo-icon {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            margin-right: 10px;
+        }
+
+        .sound-waves {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+        }
+
+        .wave {
+            position: absolute;
+            background: linear-gradient(45deg, #00f5ff, #0080ff, #8000ff);
+            border-radius: 20px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .wave:nth-child(1) {
+            width: 8px;
+            height: 60px;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: 0s;
+        }
+
+        .wave:nth-child(2) {
+            width: 6px;
+            height: 45px;
+            left: 30%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: 0.2s;
+        }
+
+        .wave:nth-child(3) {
+            width: 6px;
+            height: 45px;
+            right: 30%;
+            top: 50%;
+            transform: translate(50%, -50%);
+            animation-delay: 0.4s;
+        }
+
+        .wave:nth-child(4) {
+            width: 4px;
+            height: 30px;
+            left: 15%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: 0.6s;
+        }
+
+        .wave:nth-child(5) {
+            width: 4px;
+            height: 30px;
+            right: 15%;
+            top: 50%;
+            transform: translate(50%, -50%);
+            animation-delay: 0.8s;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: translate(-50%, -50%) scaleY(0.3);
+                opacity: 0.6;
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scaleY(1);
+                opacity: 1;
+            }
+        }
+
+        .ai-core {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 12px;
+            height: 12px;
+            background: radial-gradient(circle, #ffffff, #00f5ff);
+            border-radius: 50%;
+            box-shadow: 0 0 20px #00f5ff, 0 0 40px #00f5ff;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                box-shadow: 0 0 20px #00f5ff, 0 0 40px #00f5ff;
+            }
+
+            to {
+                box-shadow: 0 0 30px #00f5ff, 0 0 60px #00f5ff, 0 0 80px #00f5ff;
+            }
+        }
+
+        .logo-text {
+            color: #ffffff;
+            font-size: 42px;
+            font-weight: 700;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #ffffff 0%, #00f5ff 50%, #8000ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(0, 245, 255, 0.3);
+            animation: textShimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes textShimmer {
+
+            0%,
+            100% {
+                filter: brightness(1);
+            }
+
+            50% {
+                filter: brightness(1.2);
+            }
+        }
+
+        .tagline {
+            position: absolute;
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            font-weight: 400;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #00f5ff;
+            border-radius: 50%;
+            animation: float-particle 8s linear infinite;
+            opacity: 0;
+        }
+
+        @keyframes float-particle {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .particle:nth-child(1) {
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .particle:nth-child(2) {
+            left: 20%;
+            animation-delay: 1s;
+        }
+
+        .particle:nth-child(3) {
+            left: 30%;
+            animation-delay: 2s;
+        }
+
+        .particle:nth-child(4) {
+            left: 40%;
+            animation-delay: 3s;
+        }
+
+        .particle:nth-child(5) {
+            left: 50%;
+            animation-delay: 4s;
+        }
+
+        .particle:nth-child(6) {
+            left: 60%;
+            animation-delay: 5s;
+        }
+
+        .particle:nth-child(7) {
+            left: 70%;
+            animation-delay: 6s;
+        }
+
+        .particle:nth-child(8) {
+            left: 80%;
+            animation-delay: 7s;
+        }
+
+        .particle:nth-child(9) {
+            left: 90%;
+            animation-delay: 8s;
+        }
+
+        .glow-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px;
+            height: 120px;
+            border: 2px solid transparent;
+            border-radius: 50%;
+            background: linear-gradient(45deg, transparent, #00f5ff, transparent, #8000ff, transparent);
+            background-size: 400% 400%;
+            animation: rotate 4s linear infinite;
+            opacity: 0.3;
+        }
+
+        @keyframes rotate {
+            0% {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+
+            100% {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+
+        .logo-container:hover .wave {
+            animation-duration: 0.5s;
+        }
+
+        .logo-container:hover .ai-core {
+            animation-duration: 0.5s;
+        }
+
+        .logo-container:hover .glow-ring {
+            opacity: 0.6;
+            animation-duration: 2s;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <div class="logo-container">
+        <div class="glow-ring"></div>
+        <div class="logo-icon">
+            <div class="sound-waves">
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+            </div>
+            <div class="ai-core"></div>
+        </div>
+        <div class="logo-text">SpeakSynth</div>
+        <div class="tagline">AI-Powered Text-to-Speech API</div>
+    </div>
+</body>
+
+</html>
