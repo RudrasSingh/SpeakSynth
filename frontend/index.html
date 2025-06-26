@@ -178,6 +178,27 @@
 </head>
 
 <body class="bg-white min-h-screen flex flex-col font-sans">
+    <!-- Mobile Menu Fix - Add this script at the top of body -->
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            // Get hamburger button and mobile menu
+            const menuToggle = document.getElementById('menuToggle');
+            const mobileMenu = document.getElementById('mobileMenu');
+            
+            if (menuToggle && mobileMenu) {
+                console.log("Mobile menu elements found, attaching event listener");
+                
+                // Add click event to toggle mobile menu
+                menuToggle.addEventListener('click', function() {
+                    console.log("Menu toggle clicked");
+                    mobileMenu.classList.toggle('hidden');
+                });
+            } else {
+                console.error("Mobile menu elements not found");
+            }
+        });
+    </script>
+    
     <!-- Navigation -->
     <nav class="flex justify-between items-center p-6 lg:px-16 border-b border-gray-100 bg-white sticky top-0 z-50 shadow-sm">
         <div class="flex items-center">

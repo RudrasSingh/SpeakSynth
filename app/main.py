@@ -24,12 +24,17 @@ app.add_middleware(
     allow_origins=[
         "https://speaksynth.onrender.com",
         "https://speaksynth.vercel.app",  # Your production frontend
-        "http://127.0.0.1:5500",           # Common local development server
-        "http://localhost:5500",           # Alternative local development URL
+        "https://www.speaksynth.vercel.app",  # Adding www subdomain just in case
+        "http://speaksynth.vercel.app", # Non-HTTPS version
+        "http://127.0.0.1:5500",        # Common local development server
+        "http://localhost:5500",        # Alternative local development URL
+        "http://localhost:3000",        # React development server
     ],
     allow_credentials=True,
-    allow_methods=["GET", "POST", "OPTIONS"],
-    allow_headers=["Content-Type", "X-API-Key"],
+    allow_methods=["GET", "POST", "OPTIONS", "HEAD"],  # Add HEAD method
+    allow_headers=["Content-Type", "X-API-Key", "Authorization", "Origin", "Accept"],  # Add more headers
+    expose_headers=["Content-Type", "Content-Length"],  # Expose headers for frontend
+    max_age=600,  # Cache preflight requests for 10 minutes
 )
 
 client = Client("ResembleAI/Chatterbox")

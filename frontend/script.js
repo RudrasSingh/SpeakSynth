@@ -1,17 +1,28 @@
 // API Base URL - used across all pages
-const API_BASE_URL = "https://speaksynth.onrender.com";
+const API_BASE_URL = "https://apispeaksynth.publicvm.com";
 
-// Mobile menu toggle - shared across all pages
-document.addEventListener("DOMContentLoaded", function () {
+/**
+ * Initialize mobile menu toggle functionality
+ * This function will be automatically called when the page loads
+ */
+function initMobileMenu() {
   const menuToggle = document.getElementById("menuToggle");
-  if (menuToggle) {
+  const mobileMenu = document.getElementById("mobileMenu");
+
+  if (menuToggle && mobileMenu) {
     menuToggle.addEventListener("click", function () {
-      const mobileMenu = document.getElementById("mobileMenu");
-      if (mobileMenu) {
-        mobileMenu.classList.toggle("hidden");
-      }
+      console.log("Menu toggle clicked");
+      mobileMenu.classList.toggle("hidden");
     });
+  } else {
+    console.error("Mobile menu elements not found");
   }
+}
+
+// Call initMobileMenu when DOM is ready
+document.addEventListener("DOMContentLoaded", function () {
+  initMobileMenu();
+  // Any other initialization code can go here
 });
 
 /**
