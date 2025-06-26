@@ -45,24 +45,27 @@ def create_tables(conn):
     """Create the necessary tables if they don't exist"""
     cursor = conn.cursor()
     
-    # Create ip_logs table first (since it will be referenced)
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS ip_logs (
-        ip_address TEXT PRIMARY KEY,
-        attempts INTEGER DEFAULT 0,
-        created_at TEXT DEFAULT (date('now'))
-    )
-    ''')
-    
-    # Create users table with foreign key to ip_logs
+    # Create users table with email and browser_id fields
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS users (
         api_key TEXT PRIMARY KEY,
-        ip_address TEXT NOT NULL,
+        email TEXT NOT NULL,
+        browser_id TEXT NOT NULL, 
+        unique_id TEXT NOT NULL UNIQUE,
         daily_count INTEGER DEFAULT 0,
         last_used TEXT DEFAULT NULL,
-        FOREIGN KEY (ip_address) REFERENCES ip_logs (ip_address)
+        created_at TEXT DEFAULT (datetime('now'))
     )
+    ''')
+    
+    # Create index on unique_id for faster lookups
+    cursor.execute('''
+    CREATE INDEX IF NOT EXISTS idx_unique_id ON users(unique_id)
+    ''')
+    
+    # Create index on email for potential lookups
+    cursor.execute('''
+    CREATE INDEX IF NOT EXISTS idx_email ON users(email)
     ''')
     
     conn.commit()

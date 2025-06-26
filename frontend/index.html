@@ -293,7 +293,8 @@
                     <div class="code-block text-sm text-white">
                         <span class="code-line code-comment">// Convert text to speech with just a few lines</span>
                         <span class="code-line"><span class="code-keyword">async function</span> <span class="code-function">convertToSpeech</span>() {</span>
-                        <span class="code-line">  <span class="code-keyword">const</span> response = <span class="code-keyword">await</span> fetch(<span class="code-string">'https://api.speaksynth.com/api/v1/synthesize'</span>, {</span>
+                        <span class="code-line">  <span class="code-keyword">const</span> response = <span class="code-keyword">await</span> fetch(<span class="code-string">'https://apispeaksynth.publicvm.com
+                            /api/v1/synthesize'</span>, {</span>
                         <span class="code-line">    method: <span class="code-string">'POST'</span>,</span>
                         <span class="code-line">    headers: {</span>
                         <span class="code-line">      <span class="code-string">'Content-Type'</span>: <span class="code-string">'application/json'</span>,</span>
@@ -345,7 +346,7 @@
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-10">
                 <!-- Voice Card 1: Sabrina-Style (with preview) -->
-                <div class="voice-card bg-white rounded-2xl border border-gray-200 shadow-sm p-6 hover:shadow-lg cursor-pointer animate__animated animate__fadeInUp">
+                <div class="voice-card bg-white rounded-2xl border border-gray-200 shadow-sm p-6 hover:shadow-lg cursor-pointer animate__animated animate__fadeInUp" style="height: 280px; display: flex; flex-direction: column;">
                     <div class="flex items-center">
                         <div class="w-14 h-14 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center text-2xl font-bold">
                             SC
@@ -355,30 +356,23 @@
                             <p class="text-gray-500">Bright, engaging voice</p>
                         </div>
                     </div>
-                    <div class="mt-6 text-gray-700">
+                    <div class="mt-4 text-gray-700 flex-grow overflow-hidden text-sm">
                         Bright, expressive, and versatile—ideal for narrations, explainers, and projects that need a clear, premium voice presence.
                     </div>
-                    <div class="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between">
-                        <div class="flex items-center">
-                            <div class="sound-wave" style="height: 24px;">
-                                <div class="bar" style="height: 14px; background: #db2777;"></div>
-                                <div class="bar" style="height: 20px; background: #db2777;"></div>
-                                <div class="bar" style="height: 18px; background: #db2777;"></div>
-                                <div class="bar" style="height: 12px; background: #db2777;"></div>
-                                <div class="bar" style="height: 16px; background: #db2777;"></div>
-                            </div>
-                            <span class="ml-3 text-sm text-gray-600">Preview</span>
+                    <div class="mt-auto pt-4 border-t border-gray-100 flex items-center">
+                        <div class="sound-wave preview-wave" style="height: 24px;">
+                            <div class="bar" style="height: 14px; background: #db2777;"></div>
+                            <div class="bar" style="height: 20px; background: #db2777;"></div>
+                            <div class="bar" style="height: 18px; background: #db2777;"></div>
+                            <div class="bar" style="height: 12px; background: #db2777;"></div>
+                            <div class="bar" style="height: 16px; background: #db2777;"></div>
                         </div>
-                        
-                        <!-- Stop Button (hidden by default) -->
-                        <button id="stopPreviewBtn" class="hidden px-2 py-1 bg-gray-100 hover:bg-gray-200 text-sm rounded text-gray-700 transition">
-                            Stop
-                        </button>
+                        <span class="ml-3 text-sm text-gray-600 preview-text">Preview</span>
                     </div>
                 </div>
                 
                 <!-- Voice Card 2: Morgan-Style (coming soon) -->
-                <div class="voice-card bg-white rounded-2xl border border-gray-200 shadow-sm p-6 hover:shadow-lg animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
+                <div class="voice-card bg-white rounded-2xl border border-gray-200 shadow-sm p-6 hover:shadow-lg animate__animated animate__fadeInUp" style="height: 280px; display: flex; flex-direction: column; animation-delay: 0.1s;">
                     <div class="flex items-center">
                         <div class="w-14 h-14 rounded-full bg-cyan-100 text-cyan-600 flex items-center justify-center text-2xl font-bold">
                             MC
@@ -388,16 +382,16 @@
                             <p class="text-gray-500">Deep, authoritative voice</p>
                         </div>
                     </div>
-                    <div class="mt-6 text-gray-700">
+                    <div class="mt-4 text-gray-700 flex-grow overflow-hidden text-sm">
                         Perfect for narrations, documentaries, and professional voiceovers that require gravitas and authority.
                     </div>
-                    <div class="mt-6 pt-4 border-t border-gray-100">
+                    <div class="mt-auto pt-4 border-t border-gray-100">
                         <span class="inline-block px-4 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">Coming Soon</span>
                     </div>
                 </div>
                 
                 <!-- Voice Card 3: Arijit-Style (coming soon) -->
-                <div class="voice-card bg-white rounded-2xl border border-gray-200 shadow-sm p-6 hover:shadow-lg animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
+                <div class="voice-card bg-white rounded-2xl border border-gray-200 shadow-sm p-6 hover:shadow-lg animate__animated animate__fadeInUp" style="height: 280px; display: flex; flex-direction: column; animation-delay: 0.2s;">
                     <div class="flex items-center">
                         <div class="w-14 h-14 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-2xl font-bold">
                             AS
@@ -407,10 +401,10 @@
                             <p class="text-gray-500">Soulful, melodic voice</p>
                         </div>
                     </div>
-                    <div class="mt-6 text-gray-700">
+                    <div class="mt-4 text-gray-700 flex-grow overflow-hidden text-sm">
                         Perfect for emotional narrations, music content, and applications needing a warm, soulful vocal tone.
                     </div>
-                    <div class="mt-6 pt-4 border-t border-gray-100">
+                    <div class="mt-auto pt-4 border-t border-gray-100">
                         <span class="inline-block px-4 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">Coming Soon</span>
                     </div>
                 </div>
@@ -418,7 +412,7 @@
             
             <div class="text-center mt-12">
                 <a href="playground.html" class="gradient-btn inline-block px-8 py-4 rounded-xl text-white font-medium transition shadow-lg">
-                    Try All Voices in Playground
+                    Try Voices in Playground
                 </a>
             </div>
         </div>
@@ -531,9 +525,9 @@
             </div>
         </div>
     </section>
-
+<hr>
     <!-- Call to Action -->
-    <section class="py-16 px-6 lg:px-16 bg-gradient-to-r from-cyan-500 to-blue-500 text-white">
+    <section class="py-16 px-6 lg:px-16 bg-gradient-to-r from-cyan-500 to-blue-500 text-grey 800">
         <div class="max-w-4xl mx-auto text-center">
             <h3 class="text-3xl font-bold mb-6 font-display animate__animated animate__fadeIn">Ready to get started?</h3>
             <p class="text-xl text-black/90 mb-8 animate__animated animate__fadeIn" style="animation-delay: 0.1s;">
@@ -544,6 +538,27 @@
                style="animation-delay: 0.2s;">
                 Go to Insights
             </a>
+        </div>
+    </section>
+<hr>    
+    <!-- Contact Section -->
+    <section class="py-16 px-6 lg:px-16 bg-white">
+        <div class="max-w-4xl mx-auto text-center">
+            <h3 class="text-2xl font-bold mb-4 font-display text-gray-900">Questions or Feedback?</h3>
+            <p class="text-lg text-gray-600 mb-6">
+                We're here to help! Reach out with any questions, suggestions, or partnership inquiries.
+            </p>
+            <div class="inline-flex items-center justify-center space-x-2 bg-gray-100 px-6 py-4 rounded-xl">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" 
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-500">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+                <a href="mailto:code.atul01@gmail.com" class="text-blue-600 font-medium hover:text-blue-800 transition">code.atul01@gmail.com</a>
+            </div>
+            <p class="text-sm text-gray-500 mt-6">
+                We typically respond within 24-48 hours during weekdays.
+            </p>
         </div>
     </section>
 
@@ -600,80 +615,78 @@
             
             // Track if audio is currently playing
             let isPlaying = false;
+            let activeCard = null;
 
             // Add click events for voice cards to play sample audio (only for Sabrina-Style)
             document.querySelectorAll('.voice-card').forEach(card => {
                 // Check if this card has sound-wave bars (only Sabrina-Style has them)
                 const bars = card.querySelectorAll('.bar');
                 if (bars.length > 0) {
-                    const stopBtn = card.querySelector('#stopPreviewBtn');
+                    const previewText = card.querySelector('.preview-text');
                     
-                    // Play/Stop functionality in one handler
+                    // Play/Stop functionality with toggle
                     card.addEventListener('click', function (e) {
-                        // If clicked on stop button, stop the audio
-                        if (e.target.id === 'stopPreviewBtn') {
-                            stopAudioPreview(bars, stopBtn);
-                            return;
-                        }
-                        
-                        // If already playing, stop it first
                         if (isPlaying) {
-                            stopAudioPreview(bars, stopBtn);
-                            return;
+                            // If already playing, stop it
+                            stopAudioPreview();
+                        } else {
+                            // Otherwise, play the audio
+                            isPlaying = true;
+                            activeCard = card;
+                            
+                            // Use the local audio file
+                            previewAudio.src = sampleAudioUrl;
+                            
+                            // Update text to "Playing..."
+                            if (previewText) {
+                                previewText.textContent = "Playing...";
+                            }
+
+                            // Play the audio
+                            previewAudio.play().catch(err => {
+                                console.error("Failed to play audio:", err);
+                                isPlaying = false;
+                                activeCard = null;
+                                if (previewText) {
+                                    previewText.textContent = "Preview";
+                                }
+                            });
+
+                            // Animate the sound waves while audio plays
+                            bars.forEach(bar => {
+                                bar.style.animation = 'sound-wave-animation 0.5s infinite ease-in-out';
+                            });
+
+                            // Reset animation when audio ends
+                            previewAudio.onended = function () {
+                                stopAudioPreview();
+                            };
                         }
-                        
-                        // Otherwise, play the audio
-                        isPlaying = true;
-                        
-                        // Use the local audio file
-                        previewAudio.src = sampleAudioUrl;
-                        
-                        // Show stop button
-                        stopBtn.classList.remove('hidden');
-
-                        // Play the audio
-                        previewAudio.play().catch(err => {
-                            console.error("Failed to play audio:", err);
-                            isPlaying = false;
-                            stopBtn.classList.add('hidden');
-                        });
-
-                        // Animate the sound waves while audio plays
-                        bars.forEach(bar => {
-                            bar.style.animation = 'sound-wave-animation 0.5s infinite ease-in-out';
-                        });
-
-                        // Reset animation when audio ends
-                        previewAudio.onended = function () {
-                            stopAudioPreview(bars, stopBtn);
-                        };
                     });
-                    
-                    // Separate click handler for stop button to prevent event bubbling
-                    if (stopBtn) {
-                        stopBtn.addEventListener('click', function (e) {
-                            e.stopPropagation(); // Prevent triggering the card's click event
-                            stopAudioPreview(bars, stopBtn);
-                        });
-                    }
                 }
             });
             
             // Function to stop audio preview
-            function stopAudioPreview(bars, stopBtn) {
-                if (!isPlaying) return;
+            function stopAudioPreview() {
+                if (!isPlaying || !activeCard) return;
                 
                 isPlaying = false;
                 previewAudio.pause();
                 previewAudio.currentTime = 0;
                 
-                // Hide stop button
-                stopBtn.classList.add('hidden');
+                // Reset preview text
+                const previewText = activeCard.querySelector('.preview-text');
+                if (previewText) {
+                    previewText.textContent = "Preview";
+                }
                 
-                // Stop animation
+                // Stop animation on bars
+                const bars = activeCard.querySelectorAll('.bar');
                 bars.forEach(bar => {
                     bar.style.animation = '';
                 });
+                
+                activeCard = null;
             }
         });
     </script>

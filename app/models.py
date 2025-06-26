@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, field_serializer
+from pydantic import BaseModel, Field, field_serializer, EmailStr
 from enum import IntEnum
 from typing import Optional, Literal
 
@@ -26,6 +26,20 @@ class SpeakSynthRequest(BaseModel):
             "example": {
                 "text": "Hello, this is a test of the speech synthesis system.",
                 "format": 1
+            }
+        }
+    }
+
+class UserRegistration(BaseModel):
+    """Request model for user registration."""
+    email: EmailStr = Field(..., description="User's email address")
+    browser_id: str = Field(..., description="Browser fingerprint identifier")
+    
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "email": "user@example.com",
+                "browser_id": "abcdef1234567890abcdef1234567890"
             }
         }
     }

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terms of Service | SpeakSynth</title>
+  <!-- Favicon -->
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+  <link rel="icon" href="assets/favicon.ico">
+  <link rel="manifest" href="assets/site.webmanifest">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col font-sans">
+  <!-- Navigation -->
+  <nav class="flex justify-between items-center p-6 lg:px-16 border-b border-gray-100 bg-white sticky top-0 z-50 shadow-sm">
+    <div class="flex items-center">
+      <div class="logo-container mr-2">
+        <div class="logo-icon">
+          <div class="sound-waves">
+            <div class="wave"></div>
+            <div class="wave"></div>
+            <div class="wave"></div>
+          </div>
+          <div class="ai-core"></div>
+        </div>
+        <a href="index.html" class="font-bold text-2xl font-display text-gray-900">SpeakSynth</a>
+      </div>
+      <span class="ml-1 bg-blue-500 text-xs px-3 py-1 rounded-full text-white font-semibold">BETA</span>
+    </div>
+    <div class="hidden md:flex space-x-10 text-base">
+      <a href="docs.html" class="text-gray-600 hover:text-blue-500 transition font-medium">API Docs</a>
+      <a href="playground.html" class="text-gray-600 hover:text-blue-500 transition font-medium">Playground</a>
+      <a href="dashboard.html" class="text-gray-600 hover:text-blue-500 transition font-medium">Insights</a>
+    </div>
+    <button class="md:hidden text-gray-700 focus:outline-none" id="menuToggle">
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </button>
+  </nav>
+  
+  <!-- Mobile Menu -->
+  <div class="md:hidden bg-white py-4 px-6 hidden" id="mobileMenu">
+    <a href="docs.html" class="block py-3 text-gray-700 hover:text-blue-500 font-medium">API Docs</a>
+    <a href="playground.html" class="block py-3 text-gray-700 hover:text-blue-500 font-medium">Playground</a>
+    <a href="dashboard.html" class="block py-3 text-gray-700 hover:text-blue-500 font-medium">Insights</a>
+  </div>
+
+  <!-- Main Content -->
+  <main class="flex-grow p-5 lg:p-16">
+    <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-sm border border-gray-100 p-8 lg:p-10">
+      <header class="mb-8">
+        <h1 class="text-3xl font-bold mb-3 font-display text-gray-900">Terms of Service</h1>
+        <p class="text-gray-600">Last Updated: June 26, 2025</p>
+      </header>
+
+      <div class="prose max-w-none text-gray-700 space-y-6">
+        <section>
+          <h2 class="text-xl font-semibold text-gray-800 mb-3">1. Introduction</h2>
+          <p>These Terms of Service ("Terms") govern your use of SpeakSynth (the "Service"), a text-to-speech API platform operated by Atul ("we," "us," or "our"). By accessing our website at <a href="https://speaksynth.onrender.com" class="text-blue-600 hover:underline">speaksynth.onrender.com</a> or using our API, you agree to these Terms in full.</p>
+          <p>Please read these Terms carefully before using our Service. If you disagree with any part of these Terms, you must not use our Service.</p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-gray-800 mb-3">2. Service Description</h2>
+          <p>SpeakSynth provides an API that converts text into human-like speech using artificial intelligence. The Service is currently in BETA and offered with the following features:</p>
+          <ul class="list-disc pl-6 space-y-1 mb-4">
+            <li>Text-to-speech conversion with lifelike voice output</li>
+            <li>Multiple audio format options (WAV, OPUS)</li>
+            <li>API access for integration into your applications</li>
+          </ul>
+          <p>As a BETA service, SpeakSynth may undergo changes, improvements, or limitations without prior notice.</p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-gray-800 mb-3">3. API Usage and Limitations</h2>
+          <p>SpeakSynth offers free access to our API with the following limitations:</p>
+          <ul class="list-disc pl-6 space-y-1 mb-4">
+            <li>Daily limit of 50 API requests per user</li>
+            <li>Maximum text length per request: 1,000 characters</li>
+            <li>Rate limiting may apply during high-traffic periods</li>
+          </ul>
+          <p>These limits are enforced using a combination of your API key and browser fingerprinting to identify your requests. Usage limits reset at midnight UTC each day.</p>
+          <p>We reserve the right to modify these limitations or introduce paid tiers with additional features and higher usage limits in the future.</p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-gray-800 mb-3">4. User Registration and API Keys</h2>
+          <p>To use the SpeakSynth API, you must generate an API key by providing your email address. Our system creates a unique identifier based on your email address and browser characteristics to help you recover your API key in the future.</p>
+          <p>You are responsible for:</p>
+          <ul class="list-disc pl-6 space-y-1 mb-4">
+            <li>Keeping your API key secure</li>
+            <li>All activities that occur using your API key</li>
+            <li>Preventing unauthorized access to your API key</li>
+          </ul>
+          <p>We may suspend or terminate API access if we detect abuse, excessive usage, or violation of these Terms.</p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-gray-800 mb-3">5. Acceptable Use</h2>
+          <p>You agree not to use SpeakSynth for any purpose that:</p>
+          <ul class="list-disc pl-6 space-y-1 mb-4">
+            <li>Violates any applicable laws or regulations</li>
+            <li>Infringes on intellectual property rights of others</li>
+            <li>Creates content that is unlawful, harmful, threatening, abusive, harassing, defamatory, or otherwise objectionable</li>
+            <li>Attempts to bypass usage limitations or manipulate our systems</li>
+            <li>Distributes malware, viruses, or other malicious code</li>
+          </ul>
+          <p>We reserve the right to monitor API usage and terminate access for users who violate these acceptable use policies.</p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-gray-800 mb-3">6. Intellectual Property</h2>
+          <p>SpeakSynth's website design, logos, text, graphics, and service names are our intellectual property. Nothing in these Terms gives you a right to use any of our intellectual property for any purpose without our prior written permission.</p>
+          <p>You retain all rights to your content processed through our Service. However, you grant us permission to process your text inputs to generate speech outputs and improve our Service.</p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-gray-800 mb-3">7. Service Availability and Support</h2>
+          <p>While we strive to provide uninterrupted service, SpeakSynth is provided on an "as is" and "as available" basis without warranties of any kind.</p>
+          <p>We do not guarantee that:</p>
+          <ul class="list-disc pl-6 space-y-1 mb-4">
+            <li>The Service will be available at all times</li>
+            <li>The Service will be error-free or uninterrupted</li>
+            <li>Any defects will be corrected</li>
+          </ul>
+          <p>We may conduct maintenance that could affect Service availability. We will attempt to provide reasonable notice of scheduled maintenance when possible.</p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-gray-800 mb-3">8. Limitation of Liability</h2>
+          <p>To the fullest extent permitted by law, SpeakSynth shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use of or inability to use the Service.</p>
+          <p>Given the nature of the BETA service, we specifically disclaim liability for:</p>
+          <ul class="list-disc pl-6 space-y-1 mb-4">
+            <li>Service interruptions or downtime</li>
+            <li>Data loss or corruption</li>
+            <li>Any business losses or damages</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-gray-800 mb-3">9. Changes to Terms</h2>
+          <p>We may modify these Terms at any time by posting the updated Terms on our website. Your continued use of our Service after such changes constitutes your acceptance of the new Terms.</p>
+          <p>For significant changes, we will make reasonable efforts to notify you, such as by sending an email to the address associated with your account or displaying a prominent notice on our website.</p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-gray-800 mb-3">10. Contact Information</h2>
+          <p>If you have any questions about these Terms or our Service, please contact us at <a href="mailto:code.atul01@gmail.com" class="text-blue-600 hover:underline">code.atul01@gmail.com</a>.</p>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="hero-gradient text-white p-8 text-center relative overflow-hidden">
+    <!-- Particles background -->
+    <div class="particles">
+      <div class="particle" style="left:15%;animation-delay:0.5s;"></div>
+      <div class="particle" style="left:35%;animation-delay:1.3s;"></div>
+      <div class="particle" style="left:75%;animation-delay:0.8s;"></div>
+      <div class="particle" style="left:55%;animation-delay:2.1s;"></div>
+      <div class="particle" style="left:25%;animation-delay:1.7s;"></div>
+    </div>
+  
+    <div class="max-w-6xl mx-auto relative z-10 pt-10">
+      <div class="flex justify-center mb-4">
+        <div class="logo-icon">
+          <div class="sound-waves">
+            <div class="wave"></div>
+            <div class="wave"></div>
+            <div class="wave"></div>
+          </div>
+          <div class="ai-core"></div>
+        </div>
+      </div>
+  
+      <p class="text-base text-white/90 mb-4">Built with <span class="text-pink-400">❤️</span> for developers by Atul</p>
+  
+      <div class="mt-6 flex flex-wrap justify-center space-x-8">
+        <a href="docs.html" class="text-blue-200 hover:text-white transition mb-3 font-medium">API Docs</a>
+        <a href="playground.html" class="text-blue-200 hover:text-white transition mb-3 font-medium">Playground</a>
+        <a href="dashboard.html" class="text-blue-200 hover:text-white transition mb-3 font-medium">Insights</a>
+      </div>
+  
+      <p class="text-sm text-blue-200/70 mt-6">© 2025 SpeakSynth. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Link to script.js -->
+  <script src="script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Mobile menu toggle
+      document.getElementById('menuToggle').addEventListener('click', function() {
+        const mobileMenu = document.getElementById('mobileMenu');
+        mobileMenu.classList.toggle('hidden');
+      });
+    });
+  </script>
+</body>
+</html>

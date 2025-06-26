@@ -108,9 +108,7 @@
                     </a>
                     <div class="ml-9 mt-1 space-y-1">
                         <a href="#health" class="flex items-center py-2 px-4 rounded-md text-gray-600 hover:bg-gray-100 transition text-sm">Health Check</a>
-                        <a href="#register" class="flex items-center py-2 px-4 rounded-md text-gray-600 hover:bg-gray-100 transition text-sm">Register API Key</a>
                         <a href="#synthesize" class="flex items-center py-2 px-4 rounded-md text-gray-600 hover:bg-gray-100 transition text-sm">Synthesize Speech</a>
-                        <a href="#usage" class="flex items-center py-2 px-4 rounded-md text-gray-600 hover:bg-gray-100 transition text-sm">Check Usage</a>
                     </div>
                 </div>
                 <a href="#rate-limits" class="flex items-center py-2 px-4 rounded-md text-gray-700 hover:bg-gray-100 transition">
@@ -355,11 +353,8 @@ Content-Type: application/json</code></pre>
                         </div>
 
                         <div id="curl-example" class="example-content p-6">
-                            <pre class="language-bash bg-gray-50 rounded-lg p-5 overflow-x-auto"><code># Generate API Key
-curl -X POST https://api.speaksynth.com/speaksynth/api/v1/register
-
-# Synthesize Speech
-curl -X POST https://api.speaksynth.com/speaksynth/api/v1/synthesize \
+                            <pre class="language-bash bg-gray-50 rounded-lg p-5 overflow-x-auto"><code># Synthesize Speech
+curl -X POST https://apispeaksynth.publicvm.com/speaksynth/api/v1/synthesize \
   -H "Content-Type: application/json" \
   -H "X-API-Key: your_api_key_here" \
   -d '{"text":"Hello world!","format":1}' \
@@ -373,48 +368,31 @@ curl -X GET https://api.speaksynth.com/speaksynth/api/v1/usage \
                         <div id="python-example" class="example-content p-6 hidden">
                             <pre class="language-python bg-gray-50 rounded-lg p-5 overflow-x-auto"><code>import requests
 
-# Generate API Key
-response = requests.post("https://api.speaksynth.com/speaksynth/api/v1/register")
-data = response.json()
-api_key = data["api_key"]
-print(f"Your API key: {api_key}")
+# Your API key from the SpeakSynth dashboard
+api_key = "your_api_key_here"
 
 # Synthesize Speech
 headers = {"X-API-Key": api_key, "Content-Type": "application/json"}
 data = {"text": "Hello world!", "format": 1}  # 1 = WAV, 2 = OPUS
 
 response = requests.post(
-    "https://api.speaksynth.com/speaksynth/api/v1/synthesize", 
+    "https://apispeaksynth.publicvm.com/speaksynth/api/v1/synthesize", 
     headers=headers,
     json=data
 )
 
 # Save audio file
 with open("speech.wav", "wb") as f:
-    f.write(response.content)
-
-# Check Usage
-response = requests.get(
-    "https://api.speaksynth.com/speaksynth/api/v1/usage",
-    headers={"X-API-Key": api_key}
-)
-usage_data = response.json()
-print(f"Used {usage_data['daily_usage']} of {usage_data['daily_limit']} requests today")</code></pre>
+    f.write(response.content)</code></pre>
                         </div>
 
                         <div id="javascript-example" class="example-content p-6 hidden">
-                            <pre class="language-javascript bg-gray-50 rounded-lg p-5 overflow-x-auto"><code>// Generate API Key
-async function getApiKey() {
-  const response = await fetch("https://api.speaksynth.com/speaksynth/api/v1/register", {
-    method: "POST"
-  });
-  const data = await response.json();
-  return data.api_key;
-}
+                            <pre class="language-javascript bg-gray-50 rounded-lg p-5 overflow-x-auto"><code>// Your API key from the SpeakSynth dashboard
+const apiKey = "your_api_key_here";
 
 // Synthesize Speech
-async function synthesizeSpeech(apiKey, text) {
-  const response = await fetch("https://api.speaksynth.com/speaksynth/api/v1/synthesize", {
+async function synthesizeSpeech(text) {
+  const response = await fetch("https://apispeaksynth.publicvm.com/speaksynth/api/v1/synthesize", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -434,17 +412,8 @@ async function synthesizeSpeech(apiKey, text) {
   audio.play();
 }
 
-// Check Usage
-async function checkUsage(apiKey) {
-  const response = await fetch("https://api.speaksynth.com/speaksynth/api/v1/usage", {
-    headers: {
-      "X-API-Key": apiKey
-    }
-  });
-  
-  const usageData = await response.json();
-  console.log(`Used ${usageData.daily_usage} of ${usageData.daily_limit} requests today`);
-}</code></pre>
+// Example usage
+synthesizeSpeech("Hello world!");</code></pre>
                         </div>
                     </div>
                 </div>

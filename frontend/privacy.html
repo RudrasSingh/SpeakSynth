@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy | SpeakSynth</title>
+  <!-- Favicon -->
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+  <link rel="icon" href="assets/favicon.ico">
+  <link rel="manifest" href="assets/site.webmanifest">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col font-sans">
+  <!-- Navigation -->
+  <nav class="flex justify-between items-center p-6 lg:px-16 border-b border-gray-100 bg-white sticky top-0 z-50 shadow-sm">
+    <div class="flex items-center">
+      <div class="logo-container mr-2">
+        <div class="logo-icon">
+          <div class="sound-waves">
+            <div class="wave"></div>
+            <div class="wave"></div>
+            <div class="wave"></div>
+          </div>
+          <div class="ai-core"></div>
+        </div>
+        <a href="index.html" class="font-bold text-2xl font-display text-gray-900">SpeakSynth</a>
+      </div>
+      <span class="ml-1 bg-blue-500 text-xs px-3 py-1 rounded-full text-white font-semibold">BETA</span>
+    </div>
+    <div class="hidden md:flex space-x-10 text-base">
+      <a href="docs.html" class="text-gray-600 hover:text-blue-500 transition font-medium">API Docs</a>
+      <a href="playground.html" class="text-gray-600 hover:text-blue-500 transition font-medium">Playground</a>
+      <a href="dashboard.html" class="text-gray-600 hover:text-blue-500 transition font-medium">Insights</a>
+    </div>
+    <button class="md:hidden text-gray-700 focus:outline-none" id="menuToggle">
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </button>
+  </nav>
+  
+  <!-- Mobile Menu -->
+  <div class="md:hidden bg-white py-4 px-6 hidden" id="mobileMenu">
+    <a href="docs.html" class="block py-3 text-gray-700 hover:text-blue-500 font-medium">API Docs</a>
+    <a href="playground.html" class="block py-3 text-gray-700 hover:text-blue-500 font-medium">Playground</a>
+    <a href="dashboard.html" class="block py-3 text-gray-700 hover:text-blue-500 font-medium">Insights</a>
+  </div>
+
+  <!-- Main Content -->
+  <main class="flex-grow p-5 lg:p-16">
+    <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-sm border border-gray-100 p-8 lg:p-10">
+      <header class="mb-8">
+        <h1 class="text-3xl font-bold mb-3 font-display text-gray-900">Privacy Policy</h1>
+        <p class="text-gray-600">Last Updated: June 26, 2025</p>
+      </header>
+
+      <div class="prose max-w-none text-gray-700 space-y-6">
+        <section>
+          <h2 class="text-xl font-semibold text-gray-800 mb-3">1. Introduction</h2>
+          <p>This Privacy Policy explains how SpeakSynth ("we," "us," or "our") collects, uses, and safeguards your information when you use our text-to-speech API service. We respect your privacy and are committed to protecting your personal data.</p>
+          <p>By using our Service, you acknowledge that you have read and understand this Privacy Policy.</p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-gray-800 mb-3">2. Information We Collect</h2>
+          <p>We collect and process the following types of information:</p>
+          
+          <h3 class="text-lg font-semibold text-gray-800 mt-4 mb-2">2.1 Information You Provide</h3>
+          <ul class="list-disc pl-6 space-y-1 mb-4">
+            <li><strong>Email Address:</strong> Collected when you register for an API key</li>
+            <li><strong>Text Input:</strong> The text content you submit for conversion to speech</li>
+          </ul>
+          
+          <h3 class="text-lg font-semibold text-gray-800 mt-4 mb-2">2.2 Information Collected Automatically</h3>
+          <ul class="list-disc pl-6 space-y-1 mb-4">
+            <li><strong>Browser Fingerprint:</strong> A unique identifier created from browser characteristics (such as browser type, operating system, screen resolution, installed fonts, and canvas rendering)</li>
+            <li><strong>API Usage Data:</strong> Data about your use of our API, including request timestamps, frequency, and volume</li>
+            <li><strong>Log Data:</strong> Standard information sent by your browser, including IP address, browser type and version, pages visited, time and date of visits</li>
+          </ul>
+          
+          <div class="bg-blue-50 border-l-4 border-blue-500 p-4 my-6">
+            <h4 class="text-blue-800 font-medium mb-1">About Our Browser Fingerprinting</h4>
+            <p class="text-blue-700 text-sm">We use browser fingerprinting technology to create a consistent identifier for your browser. This helps us link your API key to your specific browser so you can access your API key in future sessions without having to remember it. This method is used in place of traditional IP tracking because it provides more consistent identification even when your IP address changes due to ISP reassignments, VPN usage, or network switching.</p>
+          </div>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-gray-800 mb-3">3. How We Use Your Information</h2>
+          <p>We use your information for the following purposes:</p>
+          <ul class="list-disc pl-6 space-y-1 mb-4">
+            <li>To create and manage your API key</li>
+            <li>To process your text-to-speech requests</li>
+            <li>To enforce daily usage limits and prevent abuse of our service</li>
+            <li>To identify returning users and link them to their existing API keys</li>
+            <li>To monitor and analyze usage patterns to improve our service</li>
+            <li>To detect and prevent fraudulent or unauthorized API usage</li>
+            <li>To communicate important service updates</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-gray-800 mb-3">4. How We Store Your Information</h2>
+          <p>Your information is stored securely in our database with the following measures:</p>
+          <ul class="list-disc pl-6 space-y-1 mb-4">
+            <li>Email addresses are stored in a standard format</li>
+            <li>Browser fingerprints are securely hashed</li>
+            <li>API usage data is linked to your unique API key</li>
+          </ul>
+          <p>We retain your information for as long as your account remains active or as needed to provide you with our services. If you wish to delete your account and data, please contact us at <a href="mailto:support@speaksynth.com" class="text-blue-600 hover:underline">support@speaksynth.com</a>.</p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-gray-800 mb-3">5. Your Text Content</h2>
+          <p>The text you submit for conversion to speech:</p>
+          <ul class="list-disc pl-6 space-y-1 mb-4">
+            <li>Is processed in real-time to generate speech audio</li>
+            <li>Is not permanently stored on our servers after processing</li>
+            <li>May be temporarily cached to improve performance</li>
+            <li>Is not used to train our models without explicit consent</li>
+          </ul>
+          <p>While we do not actively monitor the content you submit, we reserve the right to review content if we suspect a violation of our Terms of Service.</p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-gray-800 mb-3">6. Information Sharing and Disclosure</h2>
+          <p>We do not sell, rent, or share your personal information with third parties except in the following circumstances:</p>
+          <ul class="list-disc pl-6 space-y-1 mb-4">
+            <li>With service providers who help us operate our service (such as cloud hosting providers)</li>
+            <li>To comply with legal obligations</li>
+            <li>To protect our rights, privacy, safety, or property</li>
+            <li>In connection with a business transfer, merger, or acquisition</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-gray-800 mb-3">7. Browser Local Storage</h2>
+          <p>We use browser local storage to:</p>
+          <ul class="list-disc pl-6 space-y-1 mb-4">
+            <li>Store your API key locally for convenient access</li>
+            <li>Remember your preferences</li>
+            <li>Improve performance by caching certain data</li>
+          </ul>
+          <p>You can clear your browser's local storage through your browser settings, but doing so will require you to re-enter your email to retrieve your API key.</p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-gray-800 mb-3">8. Your Privacy Rights</h2>
+          <p>Depending on your location, you may have certain rights regarding your personal information:</p>
+          <ul class="list-disc pl-6 space-y-1 mb-4">
+            <li>Right to access the personal information we hold about you</li>
+            <li>Right to rectification of inaccurate information</li>
+            <li>Right to erasure ("right to be forgotten")</li>
+            <li>Right to restrict processing of your information</li>
+            <li>Right to data portability</li>
+          </ul>
+          <p>To exercise these rights, please contact us at <a href="mailto:support@speaksynth.com" class="text-blue-600 hover:underline">support@speaksynth.com</a>.</p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-gray-800 mb-3">9. Security</h2>
+          <p>We implement appropriate technical and organizational measures to protect your personal information, including:</p>
+          <ul class="list-disc pl-6 space-y-1 mb-4">
+            <li>Secure database storage</li>
+            <li>API key authentication</li>
+            <li>Encryption of sensitive data</li>
+            <li>Regular security assessments</li>
+          </ul>
+          <p>However, no method of transmission over the Internet or electronic storage is 100% secure. We cannot guarantee absolute security of your information.</p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-gray-800 mb-3">10. Changes to This Privacy Policy</h2>
+          <p>We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last Updated" date.</p>
+          <p>We recommend that you review this Privacy Policy periodically for any changes. Changes to this Privacy Policy are effective when they are posted on this page.</p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-semibold text-gray-800 mb-3">11. Contact Us</h2>
+          <p>If you have any questions about this Privacy Policy or our data practices, please contact us at <a href="mailto:code.atul01@gmail.com" class="text-blue-600 hover:underline">code.atul01@gmail.com</a>.</p>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="hero-gradient text-white p-8 text-center relative overflow-hidden">
+    <!-- Particles background -->
+    <div class="particles">
+      <div class="particle" style="left:15%;animation-delay:0.5s;"></div>
+      <div class="particle" style="left:35%;animation-delay:1.3s;"></div>
+      <div class="particle" style="left:75%;animation-delay:0.8s;"></div>
+      <div class="particle" style="left:55%;animation-delay:2.1s;"></div>
+      <div class="particle" style="left:25%;animation-delay:1.7s;"></div>
+    </div>
+  
+    <div class="max-w-6xl mx-auto relative z-10 pt-10">
+      <div class="flex justify-center mb-4">
+        <div class="logo-icon">
+          <div class="sound-waves">
+            <div class="wave"></div>
+            <div class="wave"></div>
+            <div class="wave"></div>
+          </div>
+          <div class="ai-core"></div>
+        </div>
+      </div>
+  
+      <p class="text-base text-white/90 mb-4">Built with <span class="text-pink-400">❤️</span> for developers by Atul</p>
+  
+      <div class="mt-6 flex flex-wrap justify-center space-x-8">
+        <a href="docs.html" class="text-blue-200 hover:text-white transition mb-3 font-medium">API Docs</a>
+        <a href="playground.html" class="text-blue-200 hover:text-white transition mb-3 font-medium">Playground</a>
+        <a href="dashboard.html" class="text-blue-200 hover:text-white transition mb-3 font-medium">Insights</a>
+      </div>
+  
+      <p class="text-sm text-blue-200/70 mt-6">© 2025 SpeakSynth. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Link to script.js -->
+  <script src="script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Mobile menu toggle
+      document.getElementById('menuToggle').addEventListener('click', function() {
+        const mobileMenu = document.getElementById('mobileMenu');
+        mobileMenu.classList.toggle('hidden');
+      });
+    });
+  </script>
+</body>
+</html>
