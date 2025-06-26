@@ -22,7 +22,8 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://speaksynth.onrender.com",  # Your production frontend
+        "https://speaksynth.onrender.com",
+        "https://speaksynth.vercel.app/",  # Your production frontend
         "http://127.0.0.1:5500",           # Common local development server
         "http://localhost:5500",           # Alternative local development URL
     ],
