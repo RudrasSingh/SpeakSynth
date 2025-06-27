@@ -179,6 +179,132 @@ h1, h2, h3, h4, .font-display {
   font-weight: 500;
 }
 
+/* Fixed header and mobile menu styling */
+nav.fixed-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 50;
+  background: white;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+#mobileMenu.fixed-menu {
+  position: fixed;
+  top: 77px; /* Height of your nav */
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 49;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  max-height: calc(100vh - 77px);
+  overflow-y: auto;
+}
+
+body.fixed-nav {
+  padding-top: 77px; /* Same as nav height */
+}
+
+/* Mobile menu overlay */
+.mobile-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 48;
+  display: none;
+  transition: opacity 0.3s ease;
+}
+
+.mobile-menu-overlay.active {
+  display: block;
+}
+
+/* Fix for Safari/iOS */
+@supports (-webkit-touch-callout: none) {
+  body.fixed-nav {
+    /* iOS requires a different approach for fixed positioning */
+    padding-top: 0;
+  }
+  
+  nav.fixed-header {
+    position: sticky;
+  }
+}
+
+/* Ensure proper z-index layering */
+#documentationSidebar {
+  z-index: 100;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  /* Adjust content padding on mobile */
+  main {
+    padding: 1rem;
+  }
+  
+  /* Make code blocks scroll horizontally on mobile */
+  pre {
+    overflow-x: auto;
+    white-space: pre;
+    word-wrap: normal;
+  }
+  
+  /* Fix table overflow */
+  table {
+    display: block;
+    overflow-x: auto;
+  }
+  
+  /* Improve code block readability on mobile */
+  pre {
+    font-size: 12px;
+    padding: 0.75rem !important;
+  }
+  
+  /* Adjust content spacing on mobile */
+  .p-6 {
+    padding: 1rem;
+  }
+  
+  .mb-16 {
+    margin-bottom: 2.5rem;
+  }
+  
+  /* Make headings more compact on mobile */
+  h2.text-3xl {
+    font-size: 1.75rem;
+  }
+  
+  /* Ensure documentation sidebar takes full screen on mobile */
+  #documentationSidebar {
+    height: 100vh;
+    overflow-y: auto;
+    padding-bottom: 6rem;
+  }
+  
+  /* Make the footer more compact on mobile */
+  footer.p-8 {
+    padding: 1.5rem 1rem;
+  }
+
+  /* Mobile-specific adjustments for loader */
+  .usage-loader {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .loader-container.py-12 {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+}
+
 /* Media queries for better mobile experience */
 @media (max-width: 640px) {
   .hero-section h1 {
@@ -437,52 +563,38 @@ body {
   position: absolute;
   top: 0;
   left: 0;
+}
+
+/* Loader styling */
+.loader-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   height: 100%;
-  pointer-events: none;
-  overflow: hidden;
-  z-index: 0;
 }
 
-.particle {
-  position: absolute;
-  width: 2px;
-  height: 2px;
-  background: #00f5ff;
+#initialLoader {
+  min-height: 300px;
+}
+
+.usage-loader {
+  border: 3px solid rgba(59, 130, 246, 0.2);
   border-radius: 50%;
-  animation: float-particle 8s linear infinite;
-  opacity: 0;
+  border-top: 3px solid #3b82f6;
+  width: 36px;
+  height: 36px;
+  animation: loader-spin 1s linear infinite;
 }
 
-@keyframes float-particle {
-  0% {
-    transform: translateY(100vh) rotate(0deg);
-    opacity: 0;
-  }
-
-  10% {
-    opacity: 1;
-  }
-
-  90% {
-    opacity: 1;
-  }
-
-  100% {
-    transform: translateY(-100vh) rotate(360deg);
-    opacity: 0;
-  }
+@keyframes loader-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-@media (max-width: 768px) {
-  .voice-container {
-    flex-direction: column;
-  }
-
-  .voice-item {
-    width: 100%;
-    margin-bottom: 1rem;
-  }
+/* Animation for usage circle */
+.usage-circle-animate {
+  transition: stroke-dasharray 1.2s ease-in-out;
 }
 
 .code-block {
@@ -511,4 +623,76 @@ body {
 
 .code-function {
   color: #38bdf8;
+}
+
+/* Additional mobile improvements */
+@media (max-width: 768px) {
+  /* Ensure proper spacing under fixed nav for sidebar on mobile */
+  #documentationSidebar {
+    top: 77px;
+  }
+  
+  /* Fix pre code block overflow on mobile */
+  pre {
+    word-break: break-word;
+    white-space: pre-wrap;
+  }
+  
+  /* Make documentation sidebar take full width on mobile */
+  #documentationSidebar {
+    width: 85%;
+    max-width: 300px;
+    transform: translateX(-105%);
+    transition: transform 0.3s ease;
+  }
+  
+  #documentationSidebar:not(.hidden) {
+    transform: translateX(0);
+  }
+}
+
+/* Server switch notification */
+#serverSwitchNotification {
+  max-width: 400px;
+  animation-duration: 0.5s;
+}
+
+.animate__animated {
+  animation-duration: 1s;
+  animation-fill-mode: both;
+}
+
+.animate__fadeIn {
+  animation-name: fadeIn;
+}
+
+.animate__fadeOut {
+  animation-name: fadeOut;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* Server status indicators */
+.server-status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.375rem;
+  background-color: #f3f4f6;
 }

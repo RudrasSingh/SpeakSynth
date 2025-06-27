@@ -5,10 +5,12 @@ from app.auth import verify_api_key, create_or_validate_user
 from app.ratelimit import enforce_daily_limit
 from app.db import get_db_conn
 from gradio_client import Client, handle_file
-import tempfile, os, subprocess
+import tempfile, os, subprocess, re
 from datetime import datetime
 import logging
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.exceptions import RequestValidationError
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 app = FastAPI(
     title="SpeakSynth - Text-to-Speech API",
@@ -18,11 +20,13 @@ app = FastAPI(
     redoc_url=None
 )
 
-# CORS middleware configuration
+# CORS middleware configuration - add all three servers
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://speaksynth.onrender.com",
+        "https://speaksynth-6ck5.onrender.com",
+        "https://speaksynth3.onrender.com",
         "https://speaksynth.vercel.app",  # Your production frontend
         "https://www.speaksynth.vercel.app",  # Adding www subdomain just in case
         "http://speaksynth.vercel.app", # Non-HTTPS version
@@ -38,6 +42,45 @@ app.add_middleware(
 )
 
 client = Client("ResembleAI/Chatterbox")
+
+# Custom exception handler for better error responses
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request: Request, exc: StarletteHTTPException):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={
+            "detail": str(exc.detail),
+            "status": "error",
+            "status_code": exc.status_code,
+            "error_type": "http_error"
+        }
+    )
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    return JSONResponse(
+        status_code=422,
+        content={
+            "detail": str(exc),
+            "status": "error",
+            "status_code": 422,
+            "error_type": "validation_error"
+        }
+    )
+
+@app.exception_handler(Exception)
+async def general_exception_handler(request: Request, exc: Exception):
+    logging.exception("Unexpected error occurred")
+    return JSONResponse(
+        status_code=500,
+        content={
+            "detail": "Internal server error",
+            "status": "error",
+            "status_code": 500,
+            "error_type": "server_error",
+            "server_message": str(exc)[:200]  # Limit length for security
+        }
+    )
 
 @app.get("/speaksynth/health")
 async def health_check():
@@ -66,7 +109,13 @@ async def register_key(user: UserRegistration):
 
     except Exception as e:
         logging.exception(f"Key registration error: {str(e)}")
-        raise HTTPException(status_code=500, detail="Error registering API key. Please try again later.")
+        raise HTTPException(
+            status_code=500, 
+            detail={
+                "message": "Error registering API key. Please try again later.",
+                "error_type": "registration_error"
+            }
+        )
 
 @app.post("/speaksynth/api/v1/synthesize")
 async def synthesize_speech(
@@ -78,36 +127,94 @@ async def synthesize_speech(
 ):
     """Convert text to speech using AI."""
     if not request.text:
-        raise HTTPException(status_code=400, detail="Text cannot be empty")
+        raise HTTPException(
+            status_code=400, 
+            detail={
+                "message": "Text cannot be empty",
+                "error_type": "validation_error"
+            }
+        )
 
-    result = client.predict(
-        text_input=request.text,
-        audio_prompt_path_input=handle_file("https://raw.githubusercontent.com/RudrasSingh/playlist-randomizer/bd4afeb10611ad36529691440a914fcfb6a28dfd/Sabrina%20Carpenter%20Answers%20the%20Web's%20Most%20Searched%20Questions%20%20WIRED.mp3"),
-        exaggeration_input=0.5,
-        temperature_input=0.8,
-        seed_num_input=0,
-        cfgw_input=0.5,
-        api_name="/generate_tts_audio"
-    )
+    try:
+        result = client.predict(
+            text_input=request.text,
+            audio_prompt_path_input=handle_file("https://raw.githubusercontent.com/RudrasSingh/playlist-randomizer/bd4afeb10611ad36529691440a914fcfb6a28dfd/Sabrina%20Carpenter%20Answers%20the%20Web's%20Most%20Searched%20Questions%20%20WIRED.mp3"),
+            exaggeration_input=0.6,
+            temperature_input=0.8,
+            seed_num_input=0,
+            cfgw_input=0.5,
+            api_name="/generate_tts_audio"
+        )
 
-    wav_path = result if isinstance(result, str) else result[0]
-    
-    # Add WAV to cleanup
-    def cleanup(path): os.remove(path) if os.path.exists(path) else None
-    
-    if request.format == AudioFormat.WAV:
-        background_tasks.add_task(cleanup, wav_path)
-        return FileResponse(wav_path, media_type="audio/wav", filename="speaksynth_output.wav")
+        wav_path = result if isinstance(result, str) else result[0]
+        
+        # Add WAV to cleanup
+        def cleanup(path): os.remove(path) if os.path.exists(path) else None
+        
+        if request.format == AudioFormat.WAV:
+            background_tasks.add_task(cleanup, wav_path)
+            return FileResponse(wav_path, media_type="audio/wav", filename="speaksynth_output.wav")
 
-    opus_fd, opus_path = tempfile.mkstemp(suffix=".opus")
-    os.close(opus_fd)
+        opus_fd, opus_path = tempfile.mkstemp(suffix=".opus")
+        os.close(opus_fd)
 
-    subprocess.run(["ffmpeg", "-y", "-i", wav_path, "-c:a", "libopus", opus_path], check=True)
+        subprocess.run(["ffmpeg", "-y", "-i", wav_path, "-c:a", "libopus", opus_path], check=True)
 
-    background_tasks.add_task(cleanup, wav_path)  # Clean up WAV file
-    background_tasks.add_task(cleanup, opus_path)  # Clean up OPUS file
+        background_tasks.add_task(cleanup, wav_path)  # Clean up WAV file
+        background_tasks.add_task(cleanup, opus_path)  # Clean up OPUS file
 
-    return FileResponse(opus_path, media_type="audio/ogg", filename="speaksynth_output.opus")
+        return FileResponse(opus_path, media_type="audio/ogg", filename="speaksynth_output.opus")
+        
+    except Exception as e:
+        error_message = str(e)
+        logging.exception(f"Speech synthesis error: {error_message}")
+        
+        # Handle GPU quota error specifically
+        if "exceeded your GPU quota" in error_message:
+            # Extract time remaining from error message
+            time_match = re.search(r"Try again in (\d+):(\d+):(\d+)", error_message)
+            
+            if time_match:
+                hours, minutes, seconds = map(int, time_match.groups())
+                total_minutes = hours * 60 + minutes
+                
+                if total_minutes > 60:
+                    wait_message = f"Please try again in about {hours} hours"
+                elif total_minutes > 0:
+                    wait_message = f"Please try again in about {total_minutes} minutes"
+                else:
+                    wait_message = f"Please try again in {seconds} seconds"
+                
+                raise HTTPException(
+                    status_code=503,  # Service Unavailable
+                    detail={
+                        "message": f"The speech synthesis service is currently at capacity. {wait_message}.",
+                        "error_type": "gpu_quota_exceeded",
+                        "wait_time": {
+                            "hours": hours,
+                            "minutes": minutes,
+                            "seconds": seconds
+                        }
+                    }
+                )
+            else:
+                raise HTTPException(
+                    status_code=503,
+                    detail={
+                        "message": "The speech synthesis service is temporarily unavailable. Please try again later.",
+                        "error_type": "gpu_quota_exceeded"
+                    }
+                )
+        
+        # Generic error handling
+        raise HTTPException(
+            status_code=500,
+            detail={
+                "message": "Speech synthesis failed. Please try again later.",
+                "error_type": "synthesis_error",
+                "error": str(e)[:200]  # Limit error message length for security
+            }
+        )
 
 @app.get("/speaksynth/api/v1/usage")
 async def check_usage(
@@ -120,14 +227,27 @@ async def check_usage(
         today = datetime.now().date()
         conn = get_db_conn()
         if conn is None:
-            raise HTTPException(status_code=500, detail="Database connection failed")
+            raise HTTPException(
+                status_code=500, 
+                detail={
+                    "message": "Database connection failed",
+                    "error_type": "database_error"
+                }
+            )
+            
         cur = conn.cursor()
         
         cur.execute("SELECT daily_count, last_used FROM users WHERE api_key = ?", (x_api_key,))
         user = cur.fetchone()
         
         if not user:
-            raise HTTPException(status_code=401, detail="Invalid API key")
+            raise HTTPException(
+                status_code=401, 
+                detail={
+                    "message": "Invalid API key",
+                    "error_type": "authentication_error"
+                }
+            )
             
         count, last_used = user
         
@@ -149,9 +269,20 @@ async def check_usage(
         })
         
     except Exception as e:
-        if conn:
-            conn.rollback()
-        raise HTTPException(status_code=500, detail="Error retrieving usage information")
+        if not isinstance(e, HTTPException):
+            logging.exception(f"Usage check error: {str(e)}")
+            if conn:
+                conn.rollback()
+            raise HTTPException(
+                status_code=500, 
+                detail={
+                    "message": "Error retrieving usage information",
+                    "error_type": "usage_error",
+                    "error": str(e)[:200]
+                }
+            )
+        else:
+            raise
     finally:
         if conn:
             conn.close()

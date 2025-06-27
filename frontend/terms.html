@@ -204,12 +204,14 @@
   <!-- Link to script.js -->
   <script src="script.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Mobile menu toggle
-      document.getElementById('menuToggle').addEventListener('click', function() {
-        const mobileMenu = document.getElementById('mobileMenu');
-        mobileMenu.classList.toggle('hidden');
-      });
+    window.addEventListener('load', function() {
+        if (typeof initMobileMenu !== 'function') {
+            console.error("Required functions not found! script.js might not be loading correctly.");
+            return;
+        }
+        
+        // Initialize mobile menu
+        initMobileMenu();
     });
   </script>
 </body>

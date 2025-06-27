@@ -621,13 +621,17 @@
 
     <script src="script.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Mobile menu functionality
-            document.getElementById('menuToggle').addEventListener('click', function () {
-                const mobileMenu = document.getElementById('mobileMenu');
-                mobileMenu.classList.toggle('hidden');
-            });
-
+        window.addEventListener('load', function() {
+            if (typeof initMobileMenu !== 'function' || typeof window.API_BASE_URL === 'undefined') {
+                console.error("Required functions or variables not found! script.js might not be loading correctly.");
+                return;
+            }
+            
+            console.log("Home page loaded, API URL:", window.API_BASE_URL);
+            
+            // Initialize mobile menu
+            initMobileMenu();
+            
             // Create a shared Audio element
             const previewAudio = new Audio();
             

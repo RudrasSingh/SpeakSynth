@@ -54,17 +54,39 @@
         </button>
     </nav>
     
-    <!-- Mobile Menu -->
-    <div class="md:hidden bg-white py-4 px-6 hidden" id="mobileMenu">
-        <a href="docs.html" class="block py-3 text-gray-700 hover:text-blue-500 font-medium">API Docs</a>
+    <!-- Mobile Menu - update to make it fixed correctly -->
+    <div class="md:hidden bg-white py-4 px-6 hidden border-t border-gray-100" id="mobileMenu">
+        <a href="docs.html" class="block py-3 text-blue-500 font-medium">API Docs</a>
         <a href="playground.html" class="block py-3 text-gray-700 hover:text-blue-500 font-medium">Playground</a>
         <a href="dashboard.html" class="block py-3 text-gray-700 hover:text-blue-500 font-medium">Insights</a>
     </div>
 
     <!-- Documentation Content -->
     <div class="flex flex-col md:flex-row flex-grow">
-        <!-- Sidebar -->
-        <aside class="hidden md:block w-80 border-r border-gray-200 p-8 bg-gray-50 sticky top-[85px] h-[calc(100vh-85px)] overflow-y-auto">
+        <!-- Mobile sidebar button -->
+        <div class="md:hidden p-4 bg-gray-50 border-b border-gray-200 sticky top-[77px] z-10">
+            <button id="mobileSidebarToggle" class="flex items-center justify-center w-full py-2 px-4 bg-white rounded border border-gray-300 shadow-sm text-blue-600 hover:bg-gray-50">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="9" y1="3" x2="9" y2="21"></line>
+                </svg>
+                Documentation Menu
+            </button>
+        </div>
+        
+        <!-- Sidebar - fix positioning for mobile -->
+        <aside class="hidden md:block w-full md:w-80 border-r border-gray-200 p-4 md:p-8 bg-gray-50 md:sticky md:top-[85px] md:h-[calc(100vh-85px)] overflow-y-auto fixed top-0 left-0 bottom-0 z-50 md:static md:z-auto" id="documentationSidebar">
+            <!-- Mobile sidebar close button - move to top -->
+            <div class="md:hidden mb-6 flex justify-end">
+                <button id="closeSidebar" class="text-gray-500 hover:text-gray-700 font-medium flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                    Close Menu
+                </button>
+            </div>
+            
             <div class="mb-8">
                 <a href="#" class="flex items-center mb-6 py-2 px-4 bg-blue-50 rounded-lg text-blue-700 font-medium">
                     <span class="bg-blue-100 w-8 h-8 flex items-center justify-center rounded-md text-blue-600 mr-3">
@@ -151,8 +173,8 @@
             </div>
         </aside>
         
-        <!-- Main Content -->
-        <main class="flex-grow p-6 lg:p-14 max-w-4xl mx-auto">
+        <!-- Main Content - make it more responsive -->
+        <main class="flex-grow p-4 md:p-6 lg:p-14 w-full max-w-4xl mx-auto">
             <div class="bg-blue-50 rounded-xl p-5 mb-10 border border-blue-100 flex items-center">
                 <svg class="text-blue-500 w-6 h-6 mr-4 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
@@ -212,7 +234,7 @@
                         <span class="font-mono text-sm text-gray-600">HTTP Headers</span>
                     </div>
                     <div class="bg-white p-5">
-                        <pre class="language-http bg-gray-50 rounded-lg p-4 overflow-x-auto"><code>X-API-Key: your_api_key_here</code></pre>
+                        <pre class="language-http bg-gray-50 rounded-lg p-3 sm:p-5 overflow-x-auto"><code>X-API-Key: your_api_key_here</code></pre>
                     </div>
                 </div>
                 
@@ -272,7 +294,7 @@
                                 </svg>
                                 Headers
                             </h4>
-                            <pre class="language-http bg-gray-50 rounded-lg p-4 overflow-x-auto mb-6"><code>X-API-Key: your_api_key_here
+                            <pre class="language-http bg-gray-50 rounded-lg p-3 sm:p-5 overflow-x-auto mb-6"><code>X-API-Key: your_api_key_here
 Content-Type: application/json</code></pre>
                             
                             <h4 class="flex items-center text-sm font-semibold uppercase tracking-wider text-gray-500 mb-3">
@@ -346,14 +368,14 @@ Content-Type: application/json</code></pre>
 
                 <div class="rounded-xl overflow-hidden border border-gray-200 shadow-sm">
                     <div class="bg-white">
-                        <div class="flex border-b border-gray-200">
-                            <button class="example-tab active py-3 px-6 text-blue-600 font-medium border-b-2 border-blue-600" data-lang="curl">cURL</button>
-                            <button class="example-tab py-3 px-6 text-gray-600 hover:text-gray-800 transition" data-lang="python">Python</button>
-                            <button class="example-tab py-3 px-6 text-gray-600 hover:text-gray-800 transition" data-lang="javascript">JavaScript</button>
+                        <div class="flex flex-wrap border-b border-gray-200">
+                            <button class="example-tab active py-3 px-2 sm:px-6 text-blue-600 font-medium border-b-2 border-blue-600" data-lang="curl">cURL</button>
+                            <button class="example-tab py-3 px-2 sm:px-6 text-gray-600 hover:text-gray-800 transition" data-lang="python">Python</button>
+                            <button class="example-tab py-3 px-2 sm:px-6 text-gray-600 hover:text-gray-800 transition" data-lang="javascript">JS</button>
                         </div>
 
                         <div id="curl-example" class="example-content p-6">
-                            <pre class="language-bash bg-gray-50 rounded-lg p-5 overflow-x-auto"><code># Synthesize Speech
+                            <pre class="language-bash bg-gray-50 rounded-lg p-3 sm:p-5 overflow-x-auto"><code># Synthesize Speech
 curl -X POST https://apispeaksynth.publicvm.com/speaksynth/api/v1/synthesize \
   -H "Content-Type: application/json" \
   -H "X-API-Key: your_api_key_here" \
@@ -473,40 +495,50 @@ synthesizeSpeech("Hello world!");</code></pre>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-bash.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-javascript.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-http.min.js"></script>
-    
+    <script src="script.js"></script>
     <script>
-        // // Mobile menu functionality
-        // document.getElementById('menuToggle').addEventListener('click', function() {
-        //     const mobileMenu = document.getElementById('mobileMenu');
-        //     mobileMenu.classList.toggle('hidden');
-        // });
-        
-        // Code tabs
-        document.querySelectorAll('.example-tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                // Remove active class from all tabs
-                document.querySelectorAll('.example-tab').forEach(t => {
-                    t.classList.remove('active', 'text-blue-600', 'border-b-2', 'border-blue-600');
-                    t.classList.add('text-gray-600', 'hover:text-gray-800');
+        window.addEventListener('load', function() {
+            if (typeof initMobileMenu !== 'function' || typeof window.API_BASE_URL === 'undefined') {
+                console.error("Required functions or variables not found! script.js might not be loading correctly.");
+                // Initialize mobile menu anyway even if API_BASE_URL is missing
+                if (typeof initMobileMenu === 'function') {
+                    initMobileMenu();
+                }
+                return;
+            }
+            
+            console.log("Docs page loaded, API URL:", window.API_BASE_URL);
+            
+            // Initialize mobile menu
+            initMobileMenu();
+            
+            // Code tabs
+            document.querySelectorAll('.example-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Remove active class from all tabs
+                    document.querySelectorAll('.example-tab').forEach(t => {
+                        t.classList.remove('active', 'text-blue-600', 'border-b-2', 'border-blue-600');
+                        t.classList.add('text-gray-600', 'hover:text-gray-800');
+                    });
+                    
+                    // Add active class to clicked tab
+                    tab.classList.remove('text-gray-600', 'hover:text-gray-800');
+                    tab.classList.add('active', 'text-blue-600', 'border-b-2', 'border-blue-600');
+                    
+                    // Hide all content
+                    document.querySelectorAll('.example-content').forEach(content => {
+                        content.classList.add('hidden');
+                    });
+                    
+                    // Show corresponding content
+                    const lang = tab.getAttribute('data-lang');
+                    document.getElementById(`${lang}-example`).classList.remove('hidden');
                 });
-                
-                // Add active class to clicked tab
-                tab.classList.remove('text-gray-600', 'hover:text-gray-800');
-                tab.classList.add('active', 'text-blue-600', 'border-b-2', 'border-blue-600');
-                
-                // Hide all content
-                document.querySelectorAll('.example-content').forEach(content => {
-                    content.classList.add('hidden');
-                });
-                
-                // Show corresponding content
-                const lang = tab.getAttribute('data-lang');
-                document.getElementById(`${lang}-example`).classList.remove('hidden');
             });
+            
+            // Initialize Prism for syntax highlighting
+            Prism.highlightAll();
         });
-        
-        // Initialize Prism for syntax highlighting
-        Prism.highlightAll();
     </script>
 </body>
 </html>

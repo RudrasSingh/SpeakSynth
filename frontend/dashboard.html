@@ -63,7 +63,16 @@
 
   <!-- Main Content -->
   <main class="flex-grow p-5 lg:p-16 bg-gray-50">
-    <div class="max-w-4xl mx-auto">
+    <!-- Initial Loader -->
+    <div id="initialLoader" class="flex-grow p-5 lg:p-16 bg-gray-50 flex items-center justify-center">
+      <div class="text-center">
+        <div class="usage-loader mx-auto mb-4"></div>
+        <p class="text-gray-600">Loading your dashboard...</p>
+      </div>
+    </div>
+
+    <!-- Main Content (hidden initially) -->
+    <div id="mainContent" class="max-w-4xl mx-auto hidden">
       <header class="mb-10">
         <h1 class="text-4xl font-bold mb-3 font-display text-gray-900">Your Insights</h1>
         <p class="text-lg text-gray-600 max-w-2xl">
@@ -158,7 +167,7 @@
             <div class="mt-6 flex items-start text-sm">
               <svg class="text-blue-500 w-5 h-5 mt-0.5 mr-2 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
-              </svg>
+            </svg>
               <p class="text-blue-800">
                 Keep your API key secure. Anyone with this key can use your daily request quota.
               </p>
@@ -178,43 +187,56 @@
               <h2 class="text-2xl font-semibold font-display text-gray-800">Today's Usage</h2>
               <p class="text-gray-600">Your daily API quota resets at midnight UTC</p>
             </div>
+            
+            <!-- Refresh button -->
+            <!-- <div class="ml-auto mt-4 sm:mt-0">
+              <button id="refreshUsageBtn" class="text-gray-500 hover:text-blue-500 focus:outline-none" title="Refresh usage data">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"></path>
+                </svg>
+              </button>
+            </div> -->
           </div>
           
           <div class="bg-gray-50 rounded-xl p-6 sm:p-8 border border-gray-100">
             <div class="flex flex-col items-center">
-              <div class="w-40 h-40 relative mb-6">
-                <svg class="w-full h-full" viewBox="0 0 36 36">
-                  <path
-                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                    fill="none"
-                    stroke="#E5E7EB"
-                    stroke-width="3"
-                    stroke-dasharray="100, 100"
-                  />
-                  <path id="usageCircle"
-                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                    fill="none"
-                    stroke="#3B82F6"
-                    stroke-width="3"
-                    stroke-dasharray="0, 100"
-                    class="transition-all duration-1000 ease-in-out"
-                  />
-                </svg>
-                <div class="absolute inset-0 flex items-center justify-center flex-col">
-                  <span id="usageValue" class="text-4xl font-bold text-gray-800">0</span>
-                  <span class="text-lg text-gray-500 -mt-1">/ 50</span>
+              <!-- Loading state -->              
+              <!-- Usage data display (initially hidden) -->
+              <div id="usageData" class="w-full hidden">
+                <div class="w-40 h-40 relative mb-6 mx-auto">
+                  <svg class="w-full h-full" viewBox="0 0 36 36">
+                    <path
+                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                      fill="none"
+                      stroke="#E5E7EB"
+                      stroke-width="3"
+                      stroke-dasharray="100, 100"
+                    />
+                    <path id="usageCircle"
+                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                      fill="none"
+                      stroke="#3B82F6"
+                      stroke-width="3"
+                      stroke-dasharray="0, 100"
+                      class="usage-circle-animate"
+                    />
+                  </svg>
+                  <div class="absolute inset-0 flex items-center justify-center flex-col">
+                    <span id="usageValue" class="text-4xl font-bold text-gray-800">0</span>
+                    <span class="text-lg text-gray-500 -mt-1">/ 50</span>
+                  </div>
                 </div>
-              </div>
+                    
+                <div class="flex items-center justify-center text-gray-800">
+                  <span id="remainingValue" class="text-2xl font-medium">50</span>
+                  <span class="ml-2">requests remaining</span>
+                </div>
                 
-              <div class="flex items-center justify-center text-gray-800">
-                <span id="remainingValue" class="text-2xl font-medium">50</span>
-                <span class="ml-2">requests remaining</span>
-              </div>
-              
-              <div class="mt-6 pt-6 border-t border-gray-200 w-full">
-                <div class="flex flex-wrap items-center justify-between">
-                  <span class="bg-blue-100 text-blue-800 text-sm py-1.5 px-3 rounded-lg font-medium">Free Tier</span>
-                  <span id="usageDate" class="text-gray-600 mt-2 sm:mt-0"></span>
+                <div class="mt-6 pt-6 border-t border-gray-200 w-full">
+                  <div class="flex flex-wrap items-center justify-between">
+                    <span class="bg-blue-100 text-blue-800 text-sm py-1.5 px-3 rounded-lg font-medium">Free Tier</span>
+                    <span id="usageDate" class="text-gray-600 mt-2 sm:mt-0"></span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -285,163 +307,244 @@
     </div>
   </footer>
 
-  <!-- Define API_BASE_URL if script.js is unavailable -->
-  <script>
-    // Ensure API_BASE_URL is defined if script.js fails to load
-    var API_BASE_URL = API_BASE_URL || "https://speaksynth.onrender.com";
-  </script>
-
-  <!-- Link to script.js -->
+  <!-- Load script.js first -->
   <script src="script.js"></script>
+
+  <!-- Then your page-specific script -->
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Make sure API_BASE_URL is available
-        if (typeof API_BASE_URL === 'undefined') {
-            console.warn("API_BASE_URL not found in script.js, using default");
-            window.API_BASE_URL = "https://apispeaksynth.publicvm.com"; // Update with your actual base URL
-        }
+    // Wait until page is fully loaded AND script.js functions are available
+    window.addEventListener('load', function() {
+      // Show initial loader
+      const initialLoader = document.getElementById('initialLoader');
+      const mainContent = document.getElementById('mainContent');
+      const noApiKeySection = document.getElementById('noApiKeySection');
+      const dashboardContent = document.getElementById('dashboardContent');
+      
+      // Keep initial loader visible until we decide what to show
+      if (initialLoader) initialLoader.classList.remove('hidden');
+      if (mainContent) mainContent.classList.add('hidden');
+      
+      // Hide both content sections until we check API key status
+      if (noApiKeySection) noApiKeySection.classList.add('hidden');
+      if (dashboardContent) dashboardContent.classList.add('hidden');
+      
+      // Check if required functions are available
+      if (typeof getApiKey !== 'function') {
+        console.error("Required functions not found! script.js might not be loading correctly.");
+        showErrorState("Could not load dashboard functionality. Please refresh the page.");
+        return;
+      }
+      
+      console.log("Dashboard loaded, API URL:", window.API_BASE_URL);
+      
+      // Check for existing API key (with a small delay to ensure localStorage is checked properly)
+      setTimeout(() => {
+        const existingKey = getApiKey();
+        const email = localStorage.getItem('speaksynth_email');
         
-        // Add these functions before setting up event listeners
+        // Show appropriate section based on API key presence
+        if (existingKey) {
+          console.log("Found existing API key, showing dashboard");
+          
+          // Show dashboard
+          if (noApiKeySection) noApiKeySection.classList.add('hidden');
+          if (dashboardContent) dashboardContent.classList.remove('hidden');
+          
+          // Update displays
+          updateApiKeyDisplay(existingKey);
+          
+          const emailDisplay = document.getElementById('emailDisplay');
+          if (emailDisplay && email) {
+            emailDisplay.textContent = email;
+          }
+          
+          // Show main content (but keep usage loading)
+          if (initialLoader) initialLoader.classList.add('hidden');
+          if (mainContent) mainContent.classList.remove('hidden');
+          
+          // Prepare usage loading indicators
+          const usageLoading = document.getElementById('usageLoading');
+          const usageData = document.getElementById('usageData');
+          if (usageLoading) usageLoading.classList.remove('hidden');
+          if (usageData) usageData.classList.add('hidden');
+          
+          // Fetch usage data
+          fetchUsageData()
+            .then(data => {
+              console.log("Usage data fetched successfully:", data);
+              localStorage.setItem('lastUsageData', JSON.stringify(data));
+              
+              // Double check that loading indicators are properly updated
+              forceUpdateUsageDisplay(data);
+            })
+            .catch(err => {
+              console.error("Error fetching usage data:", err);
+              showUsageError();
+            });
+        } else {
+          console.log("No API key found, showing generation form");
+          
+          // Show generation form
+          if (noApiKeySection) noApiKeySection.classList.remove('hidden');
+          if (dashboardContent) dashboardContent.classList.add('hidden');
+          
+          // Hide initial loader, show main content
+          if (initialLoader) initialLoader.classList.add('hidden');
+          if (mainContent) mainContent.classList.remove('hidden');
+        }
+      }, 100); // Small delay to ensure localStorage is checked
+    });
+    
+    // Force update usage display (guaranteed to work)
+    function forceUpdateUsageDisplay(data) {
+      // Directly update DOM elements
+      const usageLoading = document.getElementById("usageLoading");
+      const usageData = document.getElementById("usageData");
+      
+      // Always hide loading and show data
+      if (usageLoading) usageLoading.classList.add("hidden");
+      if (usageData) usageData.classList.remove("hidden");
+      
+      // Get the values we need
+      const used = data.daily_usage || 0;
+      const total = data.daily_limit || 50;
+      const remaining = data.remaining || (total - used);
+      
+      // Update usage numbers
+      const usageValue = document.getElementById("usageValue");
+      const remainingValue = document.getElementById("remainingValue");
+      const usageCircle = document.getElementById("usageCircle");
+      
+      if (usageValue) usageValue.textContent = used;
+      if (remainingValue) remainingValue.textContent = remaining;
+      
+      // Update usage circle
+      if (usageCircle) {
+        const percentage = Math.min(100, (used / total) * 100);
+        usageCircle.setAttribute("stroke-dasharray", `${percentage}, 100`);
         
-        /**
-         * Generate a consistent browser fingerprint
-         * @returns {Promise<string>} A consistent browser identifier
-         */
-        async function getBrowserFingerprint() {
-            // Canvas fingerprinting
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            const text = 'SpeakSynth-Fingerprint';
-            
-            // Size and configuration
-            canvas.width = 280;
-            canvas.height = 60;
-            
-            // Fill background
-            ctx.fillStyle = "#f8f8f8";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            // Text configuration
-            ctx.fillStyle = "#666";
-            ctx.font = '18px Arial';
-            ctx.fillText(text, 10, 30);
-            
-            // Add some graphics that render differently on different systems
-            ctx.strokeStyle = "#abc";
-            ctx.beginPath();
-            ctx.moveTo(20, 10);
-            ctx.bezierCurveTo(40, 20, 60, 40, 80, 20);
-            ctx.stroke();
-            
-            // Get the image data as a string
-            const dataUrl = canvas.toDataURL();
-            
-            // Combine with stable browser properties
-            const props = [
-                navigator.userAgent,
-                navigator.language,
-                screen.colorDepth,
-                screen.pixelDepth,
-                navigator.hardwareConcurrency,
-                screen.width + 'x' + screen.height,
-                navigator.platform || 'unknown',
-                navigator.vendor || 'unknown'
-            ].join('|');
-            
-            // Create a hash of the combined data
-            const combinedString = dataUrl + props;
-            
-            // Hash the string using SubtleCrypto if available (more secure)
-            try {
-                const msgBuffer = new TextEncoder().encode(combinedString);
-                const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-                const hashArray = Array.from(new Uint8Array(hashBuffer));
-                return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-            } catch (e) {
-                // Fallback to simpler hash if SubtleCrypto not available
-                let hash = 0;
-                for (let i = 0; i < combinedString.length; i++) {
-                    hash = ((hash << 5) - hash) + combinedString.charCodeAt(i);
-                    hash |= 0;  // Convert to 32bit integer
-                }
-                return Math.abs(hash).toString(36);
-            }
+        // Change color based on usage
+        if (percentage > 80) {
+          usageCircle.setAttribute("stroke", "#EF4444"); // Red
+        } else if (percentage > 50) {
+          usageCircle.setAttribute("stroke", "#F59E0B"); // Amber
+        } else {
+          usageCircle.setAttribute("stroke", "#3B82F6"); // Blue
         }
-
-        /**
-         * Show status message
-         * @param {string} message - Message to display
-         * @param {string} type - Message type (success, error, info)
-         */
-        function showStatus(message, type = 'success') {
-            const statusMessage = document.getElementById('statusMessage');
-            if (!statusMessage) return;
+      }
+      
+      // Update date
+      const usageDate = document.getElementById("usageDate");
+      if (usageDate && data.date) {
+        const dateObj = new Date(data.date);
+        usageDate.textContent = dateObj.toLocaleDateString(undefined, {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        });
+      }
+      
+      console.log("Usage display force-updated successfully");
+    }
+    
+    // Show usage error
+    function showUsageError() {
+      const usageLoading = document.getElementById("usageLoading");
+      const usageData = document.getElementById("usageData");
+      
+      if (usageLoading) usageLoading.classList.add('hidden');
+      
+      // Show error state
+      if (usageData) {
+        usageData.innerHTML = `
+          <div class="text-center py-8">
+            <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <h3 class="text-lg font-medium text-gray-700 mb-2">Couldn't load usage data</h3>
+            <p class="text-gray-500 mb-4">There was a problem loading your usage statistics.</p>
+            <button id="retryUsageBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
+              Try again
+            </button>
+          </div>
+        `;
+        usageData.classList.remove('hidden');
+        
+        document.getElementById('retryUsageBtn').addEventListener('click', function() {
+          // Show loading again
+          if (usageLoading) usageLoading.classList.remove('hidden');
+          if (usageData) usageData.classList.add('hidden');
+          
+          // Try fetching again
+          fetchUsageData()
+            .then(data => {
+              localStorage.setItem('lastUsageData', JSON.stringify(data));
+              forceUpdateUsageDisplay(data);
+            })
+            .catch(err => {
+              console.error("Error fetching usage data on retry:", err);
+              showUsageError();
+            });
+        });
+      }
+    }
+    
+    // Show general error state
+    function showErrorState(message) {
+      const initialLoader = document.getElementById('initialLoader');
+      if (initialLoader) {
+        initialLoader.innerHTML = `
+          <div class="text-center py-8">
+            <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <h3 class="text-lg font-medium text-gray-700 mb-2">Something went wrong</h3>
+            <p class="text-gray-500 mb-4">${message}</p>
+            <button onclick="window.location.reload()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
+              Refresh page
+            </button>
+          </div>
+        `;
+      }
+    }
+    
+    // API key generation form
+    const apiKeyForm = document.getElementById('apiKeyForm');
+    if (apiKeyForm) {
+        apiKeyForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
             
-            statusMessage.textContent = message;
-            statusMessage.classList.remove('hidden');
-            
-            // Reset classes
-            statusMessage.classList.remove('bg-green-50', 'text-green-700', 'border-green-200');
-            statusMessage.classList.remove('bg-red-50', 'text-red-700', 'border-red-200');
-            statusMessage.classList.remove('bg-blue-50', 'text-blue-700', 'border-blue-200');
-            
-            // Apply appropriate styling
-            if (type === 'success') {
-                statusMessage.classList.add('bg-green-50', 'text-green-700', 'border-green-200');
-            } else if (type === 'error') {
-                statusMessage.classList.add('bg-red-50', 'text-red-700', 'border-red-200');
-            } else {
-                statusMessage.classList.add('bg-blue-50', 'text-blue-700', 'border-blue-200');
-            }
-        }
-
-        /**
-         * Update API key display with masked or full key
-         * @param {string} apiKey - The API key
-         * @param {boolean} mask - Whether to mask the key
-         */
-        function updateApiKeyDisplay(apiKey, mask = true) {
-            const apiKeyDisplay = document.getElementById('apiKeyDisplay');
-            if (!apiKeyDisplay) return;
-            
-            if (mask && apiKey.length > 8) {
-                // Show first 4 and last 4 characters, mask the rest
-                const firstFour = apiKey.substring(0, 4);
-                const lastFour = apiKey.substring(apiKey.length - 4);
-                apiKeyDisplay.value = `${firstFour}${'•'.repeat(apiKey.length - 8)}${lastFour}`;
-            } else {
-                apiKeyDisplay.value = apiKey;
-            }
-        }
-
-        /**
-         * Generate API key and save it to localStorage
-         */
-        async function generateApiKey() {
-            const emailInput = document.getElementById("emailInput");
-            const generateKeyBtn = document.getElementById("generateKeyBtn");
-            
-            if (!emailInput || !emailInput.value || !emailInput.value.includes('@')) {
+            const emailInput = document.getElementById('emailInput');
+            if (!emailInput || !emailInput.value.includes('@')) {
                 showStatus("Please enter a valid email address", "error");
                 return;
             }
             
-            if (!generateKeyBtn) return;
-            
             const email = emailInput.value.trim();
+            const generateBtn = document.getElementById('generateKeyBtn');
             
-            generateKeyBtn.disabled = true;
-            generateKeyBtn.textContent = "Generating...";
-            showStatus("Processing your request...", "info");
+            if (generateBtn) {
+                generateBtn.disabled = true;
+                generateBtn.textContent = "Generating...";
+            }
             
             try {
-                // Get browser fingerprint
+                // Generate browser fingerprint
                 const browserId = await getBrowserFingerprint();
                 
-                const response = await fetch(`${API_BASE_URL}/speaksynth/api/v1/register`, {
-                    method: "POST",
+                // Get current server ID
+                const serverId = getApiServerId();
+                const baseUrl = getCurrentApiBaseUrl();
+                
+                // Make registration request
+                const response = await fetch(`${baseUrl}/speaksynth/api/v1/register`, {
+                    method: 'POST',
                     headers: {
-                        "Content-Type": "application/json",
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
                         email: email,
@@ -451,209 +554,111 @@
                 
                 if (!response.ok) {
                     const errorData = await response.json();
-                    throw new Error(errorData.detail || `API responded with status ${response.status}`);
+                    throw new Error(errorData.detail || 'Registration failed');
                 }
                 
                 const data = await response.json();
-                console.log("API key response:", data);
+                console.log("Registration response:", data);
                 
                 if (data.api_key) {
-                    // Save API key and email to localStorage
-                    localStorage.setItem("speaksynth_api_key", data.api_key);
-                    localStorage.setItem("speaksynth_email", email);
+                    // Store the new API key with server ID
+                    storeApiKey(data.api_key, email, serverId);
                     
-                    // Update UI based on page context
-                    const noApiKeySection = document.getElementById("noApiKeySection");
-                    const dashboardContent = document.getElementById("dashboardContent");
+                    // Update UI
+                    if (noApiKeySection) noApiKeySection.classList.add('hidden');
+                    if (dashboardContent) dashboardContent.classList.remove('hidden');
                     
-                    if (noApiKeySection && dashboardContent) {
-                        // We're on the dashboard page
-                        noApiKeySection.classList.add("hidden");
-                        dashboardContent.classList.remove("hidden");
-                        
-                        // Display masked API key
-                        updateApiKeyDisplay(data.api_key);
-                        
-                        // Update email display if available
-                        const emailDisplay = document.getElementById("emailDisplay");
-                        if (emailDisplay) {
-                            emailDisplay.textContent = email;
-                        }
-                        
-                        // Fetch usage data
-                        fetchUsageData(data.api_key);
-                    }
+                    updateApiKeyDisplay(data.api_key);
                     
-                    // Show success message
-                    showStatus(data.message || "API key generated successfully!");
+                    const emailDisplay = document.getElementById('emailDisplay');
+                    if (emailDisplay) emailDisplay.textContent = email;
+                    
+                    showStatus(`API key generated successfully on server ${serverId + 1}!`, "success");
+                    
+                    // Fetch initial usage data
+                    setTimeout(() => fetchUsageData(), 1000);
                 } else {
-                    showStatus(data.detail || "Failed to generate API key", "error");
+                    throw new Error("No API key returned from server");
                 }
+                
             } catch (error) {
-                console.error("Error generating API key:", error);
-                showStatus(error.message || "Error connecting to the API. Please try again.", "error");
-            } finally {
-                if (generateKeyBtn) {
-                    generateKeyBtn.disabled = false;
-                    generateKeyBtn.textContent = "Generate API Key";
+                console.error("Registration error:", error);
+                
+                // Try next server if registration fails
+                if (window.SPEAKSYNTH_SERVERS.length > 1) {
+                    const nextServerId = (getApiServerId() + 1) % window.SPEAKSYNTH_SERVERS.length;
+                    localStorage.setItem("speaksynth_server_id", nextServerId);
+                    
+                    showStatus(`Trying alternate server (${nextServerId + 1})...`, "info");
+                    
+                    // Allow retry with the new server
+                    if (generateBtn) {
+                        generateBtn.disabled = false;
+                        generateBtn.textContent = `Try Server ${nextServerId + 1}`;
+                    }
+                } else {
+                    showStatus(error.message || "Failed to generate API key", "error");
+                    
+                    if (generateBtn) {
+                        generateBtn.disabled = false;
+                        generateBtn.textContent = "Generate API Key";
+                    }
                 }
             }
-        }
-
-        /**
-         * Fetch API usage data
-         * @param {string} apiKey - The API key to check
-         */
-        async function fetchUsageData(apiKey) {
-            try {
-                if (!apiKey) {
-                    console.error("No API key provided");
-                    return;
-                }
-
-                const response = await fetch(`${API_BASE_URL}/speaksynth/api/v1/usage`, {
-                    headers: {
-                        "X-API-Key": apiKey
-                    }
+        });
+    }
+    
+    // Copy API key button
+    const copyBtn = document.getElementById('copyApiKeyBtn');
+    if (copyBtn) {
+        copyBtn.addEventListener('click', function() {
+            const apiKey = getApiKey();
+            if (apiKey) {
+                navigator.clipboard.writeText(apiKey).then(() => {
+                    showStatus("API key copied!", "success");
+                }).catch(() => {
+                    showStatus("Failed to copy", "error");
                 });
-                
-                if (!response.ok) {
-                    throw new Error(`API responded with status ${response.status}`);
-                }
-                
-                const data = await response.json();
-                updateUsageDisplay(data);
-            } catch (error) {
-                console.error("Error fetching usage data:", error);
-                showStatus("Failed to fetch usage data. Please refresh the page.", "error");
             }
-        }
-
-        /**
-         * Update the usage display with data from API
-         * @param {Object} data - Usage data from API
-         */
-        function updateUsageDisplay(data) {
-            const usageValue = document.getElementById('usageValue');
-            const remainingValue = document.getElementById('remainingValue');
-            const usageCircle = document.getElementById('usageCircle');
+        });
+    }
+    
+    // Show/hide API key toggle
+    const toggleBtn = document.getElementById('showHideKeyBtn');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', function() {
+            const display = document.getElementById('apiKeyDisplay');
+            const apiKey = getApiKey();
             
-            if (usageValue) {
-                usageValue.textContent = data.daily_usage || 0;
-            }
-            
-            if (remainingValue) {
-                remainingValue.textContent = data.remaining || 50;
-            }
-            
-            if (usageCircle) {
-                const percentage = (data.daily_usage / data.daily_limit) * 100 || 0;
-                usageCircle.style.strokeDasharray = `${percentage}, 100`;
-            }
-        }
-
-        // // Mobile menu toggle
-        // document.getElementById('menuToggle').addEventListener('click', function() {
-        //     const mobileMenu = document.getElementById('mobileMenu');
-        //     mobileMenu.classList.toggle('hidden');
-        // });
-        
-        console.log("Dashboard page loaded", API_BASE_URL);
-        
-        // Check for API key in localStorage
-        const apiKey = localStorage.getItem('speaksynth_api_key');
-        const email = localStorage.getItem('speaksynth_email');
-        const noApiKeySection = document.getElementById('noApiKeySection');
-        const dashboardContent = document.getElementById('dashboardContent');
-        
-        if (apiKey) {
-            // Show dashboard content
-            noApiKeySection.classList.add('hidden');
-            dashboardContent.classList.remove('hidden');
-            
-            // Display masked API key
-            updateApiKeyDisplay(apiKey);
-            
-            // Display email if available
-            const emailDisplay = document.getElementById('emailDisplay');
-            if (emailDisplay && email) {
-                emailDisplay.textContent = email;
-            }
-            
-            // Fetch usage data
-            fetchUsageData(apiKey);
-        }
-        
-        // API Key Form submission
-        const apiKeyForm = document.getElementById('apiKeyForm');
-        if (apiKeyForm) {
-            apiKeyForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                generateApiKey();
-            });
-        }
-        
-        // Copy API key to clipboard
-        const copyApiKeyBtn = document.getElementById('copyApiKeyBtn');
-        if (copyApiKeyBtn) {
-            copyApiKeyBtn.addEventListener('click', function() {
-                const apiKey = localStorage.getItem('speaksynth_api_key');
-                if (apiKey) {
-                    navigator.clipboard.writeText(apiKey).then(function() {
-                        showStatus("API key copied to clipboard!", "success");
-                        const originalText = this.textContent;
-                        this.textContent = 'Copied!';
-                        setTimeout(() => {
-                            this.textContent = originalText;
-                        }, 2000);
-                    }.bind(this)).catch(function() {
-                        showStatus("Failed to copy API key", "error");
-                    });
-                }
-            });
-        }
-        
-        // Fix eye icon initial state
-        const eyeIcon = document.getElementById('eyeIcon');
-        const eyeOffIcon = document.getElementById('eyeOffIcon');
-        
-        if (eyeIcon && eyeOffIcon) {
-            // Start with showing the eye (since we're showing masked key)
-            eyeIcon.classList.remove('hidden');
-            eyeOffIcon.classList.add('hidden');
-        }
-        
-        // Toggle API key visibility
-        const showHideKeyBtn = document.getElementById('showHideKeyBtn');
-        if (showHideKeyBtn) {
-            showHideKeyBtn.addEventListener('click', function() {
-                const apiKeyDisplay = document.getElementById('apiKeyDisplay');
-                const apiKey = localStorage.getItem('speaksynth_api_key');
-                
-                if (apiKeyDisplay.value === apiKey) {
-                    // Mask the API key
+            if (display && apiKey) {
+                if (display.value === apiKey) {
+                    // Currently showing, so hide it
                     updateApiKeyDisplay(apiKey, true);
-                    eyeIcon.classList.remove('hidden');
-                    eyeOffIcon.classList.add('hidden');
                 } else {
-                    // Show the API key
-                    apiKeyDisplay.value = apiKey;
-                    eyeIcon.classList.add('hidden');
-                    eyeOffIcon.classList.remove('hidden');
+                    // Currently hidden, so show it
+                    display.value = apiKey;
                 }
-            });
-        }
-        
-        // Set current date
-        const usageDate = document.getElementById('usageDate');
-        if (usageDate) {
-            usageDate.textContent = new Date().toLocaleDateString(undefined, {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-            });
-        }
-    });
-</script>
+            }
+        });
+    }
+    
+    // Set current date
+    const usageDate = document.getElementById('usageDate');
+    if (usageDate) {
+        usageDate.textContent = new Date().toLocaleDateString(undefined, {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    }
+    
+    // Refresh usage button
+    const refreshUsageBtn = document.getElementById('refreshUsageBtn');
+    if (refreshUsageBtn) {
+      refreshUsageBtn.addEventListener('click', function() {
+        fetchUsageData();
+      });
+    }
+  </script>
 </body>
 </html>
