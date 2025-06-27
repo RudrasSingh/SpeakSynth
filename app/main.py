@@ -117,6 +117,88 @@ async def register_key(user: UserRegistration):
             }
         )
 
+@app.post("/speaksynth/api/v1/sync-key")
+async def sync_api_key(
+    user: UserRegistration,
+    x_api_key: str = Header(...)
+):
+    """
+    Sync an API key from another server to this one.
+    This allows users to use their API key across all servers.
+    """
+    try:
+        # Extract email and browser_id from the request
+        email = user.email
+        browser_id = user.browser_id
+        
+        # Validate the inputs
+        if not email or not browser_id or not x_api_key:
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "message": "Email, browser ID, and API key are required",
+                    "error_type": "validation_error"
+                }
+            )
+        
+        # Connect to database
+        conn = get_db_conn()
+        if not conn:
+            raise HTTPException(
+                status_code=500,
+                detail={
+                    "message": "Database connection failed",
+                    "error_type": "database_error"
+                }
+            )
+            
+        try:
+            cur = conn.cursor()
+            
+            # Check if user exists by browser_id
+            cur.execute("SELECT email FROM users WHERE browser_id = ?", (browser_id,))
+            existing_user = cur.fetchone()
+            
+            if existing_user:
+                # User exists, update their API key to match the one from the other server
+                cur.execute(
+                    "UPDATE users SET api_key = ? WHERE browser_id = ?",
+                    (x_api_key, browser_id)
+                )
+            else:
+                # User doesn't exist, create new entry with the provided API key
+                today = datetime.now().date()
+                cur.execute(
+                    "INSERT INTO users (email, browser_id, api_key, created_at, last_used, daily_count) VALUES (?, ?, ?, ?, ?, 0)",
+                    (email, browser_id, x_api_key, today, today)
+                )
+                
+            conn.commit()
+            
+            return JSONResponse(content={
+                "message": "API key synchronized successfully",
+                "synced": True
+            })
+            
+        except Exception as e:
+            conn.rollback()
+            raise e
+        finally:
+            conn.close()
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.exception(f"API key sync error: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail={
+                "message": "Failed to sync API key. Please try again later.",
+                "error_type": "sync_error",
+                "error": str(e)[:200]
+            }
+        )
+
 @app.post("/speaksynth/api/v1/synthesize")
 async def synthesize_speech(
     request: SpeakSynthRequest,

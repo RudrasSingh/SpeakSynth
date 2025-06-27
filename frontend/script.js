@@ -258,13 +258,61 @@ window.addEventListener("unhandledrejection", function (event) {
 });
 
 /**
+ * Sync API key to the current server
+ */
+async function syncApiKeyToServer() {
+  const apiKey = localStorage.getItem("speaksynth_api_key");
+  const email = localStorage.getItem("speaksynth_email");
+
+  if (!apiKey || !email) {
+    console.warn("No API key or email to sync");
+    return false;
+  }
+
+  try {
+    // Generate browser fingerprint for validation
+    const browserId = await getBrowserFingerprint();
+
+    // Get current server base URL
+    const baseUrl = getCurrentApiBaseUrl();
+
+    console.log(`Syncing API key to server: ${baseUrl}`);
+
+    const response = await fetch(`${baseUrl}/speaksynth/api/v1/sync-key`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-API-Key": apiKey,
+      },
+      body: JSON.stringify({
+        email: email,
+        browser_id: browserId,
+      }),
+    });
+
+    if (!response.ok) {
+      console.error(`API key sync failed: ${response.status}`);
+      return false;
+    }
+
+    const result = await response.json();
+    console.log("API key sync result:", result);
+    return result.synced === true;
+  } catch (error) {
+    console.error("Error syncing API key:", error);
+    return false;
+  }
+}
+
+/**
  * Make authenticated API requests with server fallback
  */
 async function makeApiRequest(
   endpoint,
   options = {},
   timeout = 30000,
-  retryCount = 0
+  retryCount = 0,
+  triedSync = false // New parameter to track if we've tried syncing
 ) {
   const apiKey = getApiKey();
 
@@ -321,14 +369,30 @@ async function makeApiRequest(
 
       console.error("API Error:", errorMessage, errorDetail);
 
-      // Special handling for 401 errors - this means the API key is invalid
-      if (response.status === 401) {
-        console.warn("401 error - clearing potentially invalid API key");
+      // Special handling for 401 errors - attempt to sync key first before clearing
+      if (response.status === 401 && !triedSync) {
+        console.warn("401 error - attempting to sync API key across servers");
+
+        // Try to sync the API key to the current server
+        const syncSuccess = await syncApiKeyToServer();
+
+        if (syncSuccess) {
+          console.log("API key sync successful, retrying request");
+          // Retry the request with the newly synced key
+          return makeApiRequest(endpoint, options, timeout, retryCount, true);
+        } else {
+          console.warn("API key sync failed, clearing invalid key");
+          clearApiKey();
+          throw new Error(errorMessage);
+        }
+      } else if (response.status === 401) {
+        // Already tried syncing or sync failed
+        console.warn("401 error after sync attempt - clearing invalid API key");
         clearApiKey();
         throw new Error(errorMessage);
       }
 
-      // Check if it's the synthesize endpoint - switch servers for ANY error on this endpoint
+      // Check if it's the synthesize endpoint - switch servers for ANY error
       if (
         endpoint.includes("/synthesize") &&
         retryCount < window.SPEAKSYNTH_SERVERS.length - 1
@@ -345,11 +409,18 @@ async function makeApiRequest(
           errorDetail?.error_type || "synthesis_error"
         );
 
-        // Wait a moment to ensure the API is available
+        // Wait a moment to ensure the API is available and sync key
         await new Promise((resolve) => setTimeout(resolve, 1000));
+        await syncApiKeyToServer();
 
         // Retry with new server
-        return makeApiRequest(endpoint, options, timeout, retryCount + 1);
+        return makeApiRequest(
+          endpoint,
+          options,
+          timeout,
+          retryCount + 1,
+          false
+        );
       }
 
       // For other endpoints, only switch servers on 5xx errors or specific errors
@@ -372,11 +443,18 @@ async function makeApiRequest(
         // Show notification
         showServerSwitchNotification(errorDetail?.error_type || "server_error");
 
-        // Wait a moment to ensure the API is available
+        // Wait a moment to ensure the API is available and sync key
         await new Promise((resolve) => setTimeout(resolve, 1000));
+        await syncApiKeyToServer();
 
         // Retry with new server
-        return makeApiRequest(endpoint, options, timeout, retryCount + 1);
+        return makeApiRequest(
+          endpoint,
+          options,
+          timeout,
+          retryCount + 1,
+          false
+        );
       }
 
       // Create error object with additional details
@@ -404,11 +482,12 @@ async function makeApiRequest(
       // Show notification
       showServerSwitchNotification("network_error");
 
-      // Wait a moment
+      // Wait a moment and sync API key
       await new Promise((resolve) => setTimeout(resolve, 1000));
+      await syncApiKeyToServer();
 
       // Retry with new server
-      return makeApiRequest(endpoint, options, timeout, retryCount + 1);
+      return makeApiRequest(endpoint, options, timeout, retryCount + 1, false);
     }
 
     throw error;
@@ -701,4 +780,23 @@ function showServerSwitchNotification(errorType = "unknown_error") {
       setTimeout(() => notification.remove(), 1000);
     }
   }, 8000);
+}
+
+/**
+ * Switch to next server with API key sync
+ */
+async function switchToNextServerWithSync() {
+  const currentServerId = getApiServerId();
+  const serverCount = window.SPEAKSYNTH_SERVERS.length;
+  const nextServerId = (currentServerId + 1) % serverCount;
+
+  localStorage.setItem("speaksynth_server_id", nextServerId);
+  console.log(
+    `Switching from server ${currentServerId} to server ${nextServerId}`
+  );
+
+  // Sync API key to the new server
+  await syncApiKeyToServer();
+
+  return window.SPEAKSYNTH_SERVERS[nextServerId];
 }

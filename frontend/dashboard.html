@@ -397,13 +397,22 @@
     
     // Force update usage display (guaranteed to work)
     function forceUpdateUsageDisplay(data) {
+      console.log("Force updating usage display with data:", data);
+      
       // Directly update DOM elements
       const usageLoading = document.getElementById("usageLoading");
       const usageData = document.getElementById("usageData");
       
       // Always hide loading and show data
-      if (usageLoading) usageLoading.classList.add("hidden");
-      if (usageData) usageData.classList.remove("hidden");
+      if (usageLoading) {
+        usageLoading.classList.add("hidden");
+        console.log("Usage loading hidden");
+      }
+      
+      if (usageData) {
+        usageData.classList.remove("hidden");
+        console.log("Usage data displayed");
+      }
       
       // Get the values we need
       const used = data.daily_usage || 0;
@@ -415,8 +424,19 @@
       const remainingValue = document.getElementById("remainingValue");
       const usageCircle = document.getElementById("usageCircle");
       
-      if (usageValue) usageValue.textContent = used;
-      if (remainingValue) remainingValue.textContent = remaining;
+      if (usageValue) {
+        usageValue.textContent = used;
+        console.log("Updated usage value to:", used);
+      } else {
+        console.warn("usageValue element not found");
+      }
+      
+      if (remainingValue) {
+        remainingValue.textContent = remaining;
+        console.log("Updated remaining value to:", remaining);
+      } else {
+        console.warn("remainingValue element not found");
+      }
       
       // Update usage circle
       if (usageCircle) {
@@ -431,6 +451,9 @@
         } else {
           usageCircle.setAttribute("stroke", "#3B82F6"); // Blue
         }
+        console.log("Updated usage circle to:", percentage, "%");
+      } else {
+        console.warn("usageCircle element not found");
       }
       
       // Update date
@@ -442,9 +465,8 @@
           month: "short",
           day: "numeric",
         });
+        console.log("Updated usage date to:", data.date);
       }
-      
-      console.log("Usage display force-updated successfully");
     }
     
     // Show usage error
@@ -536,73 +558,62 @@
                 // Generate browser fingerprint
                 const browserId = await getBrowserFingerprint();
                 
-                // Get current server ID
-                const serverId = getApiServerId();
-                const baseUrl = getCurrentApiBaseUrl();
+                // Register and sync API key across all servers
+                const result = await registerAndSyncApiKey(email, browserId);
                 
-                // Make registration request
-                const response = await fetch(`${baseUrl}/speaksynth/api/v1/register`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        email: email,
-                        browser_id: browserId
-                    })
-                });
-                
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.detail || 'Registration failed');
+                if (!result.success) {
+                    throw new Error(result.error || "Failed to generate API key");
                 }
                 
-                const data = await response.json();
-                console.log("Registration response:", data);
+                // Update UI with success
+                if (noApiKeySection) noApiKeySection.classList.add('hidden');
+                if (dashboardContent) dashboardContent.classList.remove('hidden');
                 
-                if (data.api_key) {
-                    // Store the new API key with server ID
-                    storeApiKey(data.api_key, email, serverId);
-                    
-                    // Update UI
-                    if (noApiKeySection) noApiKeySection.classList.add('hidden');
-                    if (dashboardContent) dashboardContent.classList.remove('hidden');
-                    
-                    updateApiKeyDisplay(data.api_key);
-                    
-                    const emailDisplay = document.getElementById('emailDisplay');
-                    if (emailDisplay) emailDisplay.textContent = email;
-                    
-                    showStatus(`API key generated successfully on server ${serverId + 1}!`, "success");
-                    
-                    // Fetch initial usage data
-                    setTimeout(() => fetchUsageData(), 1000);
-                } else {
-                    throw new Error("No API key returned from server");
+                updateApiKeyDisplay(result.apiKey);
+                
+                const emailDisplay = document.getElementById('emailDisplay');
+                if (emailDisplay) emailDisplay.textContent = email;
+                
+                showStatus(`API key generated and synced across all servers!`, "success");
+                
+                // Show loading UI for usage
+                const usageLoading = document.getElementById('usageLoading');
+                const usageData = document.getElementById('usageData');
+                
+                if (usageLoading) {
+                    // Create loading UI if it doesn't exist
+                    if (!document.getElementById('usageLoadingSpinner')) {
+                        usageLoading.innerHTML = `
+                        <div id="usageLoadingSpinner" class="flex flex-col items-center py-8">
+                            <div class="usage-loader mx-auto mb-4"></div>
+                            <p class="text-gray-600">Loading usage data...</p>
+                        </div>`;
+                    }
+                    usageLoading.classList.remove('hidden');
                 }
                 
+                if (usageData) usageData.classList.add('hidden');
+                
+                // Fetch initial usage data
+                try {
+                    const usageData = await fetchUsageData();
+                    console.log("Initial usage data after key generation:", usageData);
+                    
+                    // Explicitly call display update with a small delay to ensure DOM is ready
+                    setTimeout(() => {
+                        forceUpdateUsageDisplay(usageData);
+                    }, 500);
+                } catch (usageError) {
+                    console.error("Error fetching initial usage:", usageError);
+                    showUsageError();
+                }
             } catch (error) {
                 console.error("Registration error:", error);
+                showStatus(error.message || "Failed to generate API key", "error");
                 
-                // Try next server if registration fails
-                if (window.SPEAKSYNTH_SERVERS.length > 1) {
-                    const nextServerId = (getApiServerId() + 1) % window.SPEAKSYNTH_SERVERS.length;
-                    localStorage.setItem("speaksynth_server_id", nextServerId);
-                    
-                    showStatus(`Trying alternate server (${nextServerId + 1})...`, "info");
-                    
-                    // Allow retry with the new server
-                    if (generateBtn) {
-                        generateBtn.disabled = false;
-                        generateBtn.textContent = `Try Server ${nextServerId + 1}`;
-                    }
-                } else {
-                    showStatus(error.message || "Failed to generate API key", "error");
-                    
-                    if (generateBtn) {
-                        generateBtn.disabled = false;
-                        generateBtn.textContent = "Generate API Key";
-                    }
+                if (generateBtn) {
+                    generateBtn.disabled = false;
+                    generateBtn.textContent = "Generate API Key";
                 }
             }
         });
@@ -658,6 +669,85 @@
       refreshUsageBtn.addEventListener('click', function() {
         fetchUsageData();
       });
+    }
+    
+    // Add this function to your dashboard.html script section
+    async function registerAndSyncApiKey(email, browserId) {
+      // First register with the current server to get an API key
+      const serverId = getApiServerId();
+      const baseUrl = getCurrentApiBaseUrl();
+      
+      try {
+        // Generate API key on current server
+        const response = await fetch(`${baseUrl}/speaksynth/api/v1/register`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            email: email,
+            browser_id: browserId
+          })
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.detail?.message || 'Registration failed');
+        }
+        
+        const data = await response.json();
+        console.log("Registration response:", data);
+        
+        if (!data.api_key) {
+          throw new Error("No API key returned from server");
+        }
+        
+        // Store the new API key with current server ID
+        storeApiKey(data.api_key, email, serverId);
+        
+        // Now sync this API key to all other servers
+        for (let i = 0; i < window.SPEAKSYNTH_SERVERS.length; i++) {
+          // Skip the current server as we just registered there
+          if (i === serverId) continue;
+          
+          try {
+            const otherServerUrl = window.SPEAKSYNTH_SERVERS[i];
+            console.log(`Syncing API key to server ${i}: ${otherServerUrl}`);
+            
+            const syncResponse = await fetch(`${otherServerUrl}/speaksynth/api/v1/sync-key`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-API-Key': data.api_key
+              },
+              body: JSON.stringify({
+                email: email,
+                browser_id: browserId
+              })
+            });
+            
+            if (syncResponse.ok) {
+              console.log(`Successfully synced API key to server ${i}`);
+            } else {
+              console.warn(`Failed to sync API key to server ${i}`);
+            }
+          } catch (syncError) {
+            console.error(`Error syncing API key to server ${i}:`, syncError);
+          }
+        }
+        
+        return {
+          success: true,
+          apiKey: data.api_key,
+          message: data.message
+        };
+      } catch (error) {
+        console.error("Registration error:", error);
+        return {
+          success: false,
+          error: error.message
+        };
+      }
     }
   </script>
 </body>
