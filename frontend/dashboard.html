@@ -395,9 +395,25 @@
       }, 100); // Small delay to ensure localStorage is checked
     });
     
-    // Force update usage display (guaranteed to work)
+    // Add this function to immediately update the usage data display
     function forceUpdateUsageDisplay(data) {
       console.log("Force updating usage display with data:", data);
+      
+      // Check if we have a missing usageLoading element and create it
+      const usageSection = document.querySelector('.bg-gray-50.rounded-xl.p-6.sm\\:p-8.border.border-gray-100');
+      if (usageSection && !document.getElementById('usageLoading')) {
+        const loadingDiv = document.createElement('div');
+        loadingDiv.id = 'usageLoading';
+        loadingDiv.className = 'w-full flex justify-center py-8';
+        loadingDiv.innerHTML = `
+          <div class="flex flex-col items-center">
+            <div class="usage-loader mx-auto mb-4"></div>
+            <p class="text-gray-600">Loading usage data...</p>
+          </div>
+        `;
+        usageSection.prepend(loadingDiv);
+        console.log("Created missing usageLoading element");
+      }
       
       // Directly update DOM elements
       const usageLoading = document.getElementById("usageLoading");
@@ -407,11 +423,15 @@
       if (usageLoading) {
         usageLoading.classList.add("hidden");
         console.log("Usage loading hidden");
+      } else {
+        console.warn("usageLoading element not found");
       }
       
       if (usageData) {
         usageData.classList.remove("hidden");
         console.log("Usage data displayed");
+      } else {
+        console.error("usageData element not found - cannot display usage stats");
       }
       
       // Get the values we need
@@ -438,20 +458,22 @@
         console.warn("remainingValue element not found");
       }
       
-      // Update usage circle
+      // Update usage circle with animation delay to make it visible
       if (usageCircle) {
-        const percentage = Math.min(100, (used / total) * 100);
-        usageCircle.setAttribute("stroke-dasharray", `${percentage}, 100`);
-        
-        // Change color based on usage
-        if (percentage > 80) {
-          usageCircle.setAttribute("stroke", "#EF4444"); // Red
-        } else if (percentage > 50) {
-          usageCircle.setAttribute("stroke", "#F59E0B"); // Amber
-        } else {
-          usageCircle.setAttribute("stroke", "#3B82F6"); // Blue
-        }
-        console.log("Updated usage circle to:", percentage, "%");
+        setTimeout(() => {
+          const percentage = Math.min(100, (used / total) * 100);
+          usageCircle.setAttribute("stroke-dasharray", `${percentage}, 100`);
+          
+          // Change color based on usage
+          if (percentage > 80) {
+            usageCircle.setAttribute("stroke", "#EF4444"); // Red
+          } else if (percentage > 50) {
+            usageCircle.setAttribute("stroke", "#F59E0B"); // Amber
+          } else {
+            usageCircle.setAttribute("stroke", "#3B82F6"); // Blue
+          }
+          console.log("Updated usage circle to:", percentage, "%");
+        }, 300); // Small delay for animation
       } else {
         console.warn("usageCircle element not found");
       }
@@ -671,7 +693,7 @@
       });
     }
     
-    // Add this function to your dashboard.html script section
+    // Replace the current registerAndSyncApiKey function with this improved version
     async function registerAndSyncApiKey(email, browserId) {
       // First register with the current server to get an API key
       const serverId = getApiServerId();
@@ -706,40 +728,64 @@
         storeApiKey(data.api_key, email, serverId);
         
         // Now sync this API key to all other servers
+        let syncErrors = 0;
+        const syncPromises = [];
+        
         for (let i = 0; i < window.SPEAKSYNTH_SERVERS.length; i++) {
           // Skip the current server as we just registered there
           if (i === serverId) continue;
           
-          try {
-            const otherServerUrl = window.SPEAKSYNTH_SERVERS[i];
-            console.log(`Syncing API key to server ${i}: ${otherServerUrl}`);
-            
-            const syncResponse = await fetch(`${otherServerUrl}/speaksynth/api/v1/sync-key`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'X-API-Key': data.api_key
-              },
-              body: JSON.stringify({
-                email: email,
-                browser_id: browserId
-              })
-            });
-            
-            if (syncResponse.ok) {
-              console.log(`Successfully synced API key to server ${i}`);
-            } else {
-              console.warn(`Failed to sync API key to server ${i}`);
+          const syncPromise = (async () => {
+            try {
+              const otherServerUrl = window.SPEAKSYNTH_SERVERS[i];
+              console.log(`Syncing API key to server ${i}: ${otherServerUrl}`);
+              
+              const syncResponse = await fetch(`${otherServerUrl}/speaksynth/api/v1/sync-key`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'X-API-Key': data.api_key
+                },
+                body: JSON.stringify({
+                  email: email,
+                  browser_id: browserId
+                }),
+                // Add timeout
+                signal: AbortSignal.timeout(5000)
+              });
+              
+              if (syncResponse.ok) {
+                console.log(`Successfully synced API key to server ${i}`);
+                return true;
+              } else {
+                console.warn(`Failed to sync API key to server ${i} - HTTP ${syncResponse.status}`);
+                syncErrors++;
+                return false;
+              }
+            } catch (syncError) {
+              console.error(`Error syncing API key to server ${i}:`, syncError);
+              syncErrors++;
+              return false;
             }
-          } catch (syncError) {
-            console.error(`Error syncing API key to server ${i}:`, syncError);
-          }
+          })();
+          
+          syncPromises.push(syncPromise);
+        }
+        
+        // Wait for all sync operations to complete but don't fail if some fail
+        await Promise.allSettled(syncPromises);
+        
+        // Log sync status
+        if (syncErrors > 0) {
+          console.warn(`API key synced with some errors (${syncErrors} failures)`);
+          showStatus(`API key generated! Note: Sync to some backup servers failed.`, "info");
         }
         
         return {
           success: true,
           apiKey: data.api_key,
-          message: data.message
+          message: data.message,
+          syncErrors: syncErrors
         };
       } catch (error) {
         console.error("Registration error:", error);
@@ -747,6 +793,38 @@
           success: false,
           error: error.message
         };
+      }
+    }
+    
+    // Add this to your showStatus function to make it more robust
+    function showStatus(message, type = "success") {
+      // Find the correct status message element
+      const statusMessage = document.getElementById("statusMessage");
+      if (!statusMessage) {
+        console.log(`Status: ${message} (${type})`);
+        return;
+      }
+      
+      statusMessage.innerHTML = message;
+      statusMessage.classList.remove("hidden");
+      
+      // Reset all styles
+      statusMessage.className = "mb-4 p-4 rounded-lg border";
+      
+      // Apply appropriate styling
+      if (type === "success") {
+        statusMessage.classList.add("bg-green-50", "text-green-700", "border-green-200");
+      } else if (type === "error") {
+        statusMessage.classList.add("bg-red-50", "text-red-700", "border-red-200");
+      } else {
+        statusMessage.classList.add("bg-blue-50", "text-blue-700", "border-blue-200");
+      }
+      
+      // Auto-hide after 8 seconds for non-error messages
+      if (type !== "error") {
+        setTimeout(() => {
+          statusMessage.classList.add("hidden");
+        }, 8000);
       }
     }
   </script>
