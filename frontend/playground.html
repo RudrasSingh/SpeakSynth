@@ -279,31 +279,6 @@
                     <span id="usageValue" class="font-medium">0</span>/<span id="usageLimitValue">50</span> requests used today
                 </div>
             </div>
-
-            <!-- Add this after the Usage Stats section, just before the footer -->
-            <div class="max-w-6xl mx-auto mt-4 mb-8">
-                <div id="serverStatusBox" class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Server Status</h3>
-                    <div class="flex flex-wrap gap-4">
-                        <div class="server-status flex items-center" data-server="0">
-                            <div class="w-3 h-3 bg-gray-300 rounded-full mr-2"></div>
-                            <span>Server 1</span>
-                        </div>
-                        <div class="server-status flex items-center" data-server="1">
-                            <div class="w-3 h-3 bg-gray-300 rounded-full mr-2"></div>
-                            <span>Server 2</span>
-                        </div>
-                        <div class="server-status flex items-center" data-server="2">
-                            <div class="w-3 h-3 bg-gray-300 rounded-full mr-2"></div>
-                            <span>Server 3</span>
-                        </div>
-                    </div>
-                    <p class="text-xs text-gray-500 mt-2">
-                        Current server: <span id="currentServerDisplay">1</span> • 
-                        <button id="switchServerBtn" class="text-blue-500 hover:text-blue-700">Switch Server</button>
-                    </p>
-                </div>
-            </div>
         </div>
     </main>
 
@@ -776,62 +751,6 @@ async function synthesizeText(text, format = 1) {
     }
   }
 }
-
-// Add this to the existing script
-function updateServerStatusDisplay() {
-    const currentServerId = getApiServerId();
-    
-    // Update indicator showing current server
-    document.getElementById('currentServerDisplay').textContent = (currentServerId + 1);
-    
-    // Update status indicators
-    document.querySelectorAll('.server-status').forEach(status => {
-        const serverId = parseInt(status.getAttribute('data-server'), 10);
-        const indicator = status.querySelector('div');
-        
-        if (serverId === currentServerId) {
-            indicator.classList.remove('bg-gray-300');
-            indicator.classList.add('bg-green-500');
-        } else {
-            indicator.classList.remove('bg-green-500');
-            indicator.classList.add('bg-gray-300');
-        }
-    });
-}
-
-// Add event listener for manually switching servers
-document.getElementById('switchServerBtn').addEventListener('click', function() {
-    switchToNextServer();
-    updateServerStatusDisplay();
-    showServerSwitchNotification();
-});
-
-// Initialize server status display
-document.addEventListener('DOMContentLoaded', function() {
-    updateServerStatusDisplay();
-    
-    // Add ping test functionality
-    document.querySelectorAll('.server-status').forEach(status => {
-        const serverId = parseInt(status.getAttribute('data-server'), 10);
-        const serverUrl = window.SPEAKSYNTH_SERVERS[serverId];
-        
-        // Ping server to check status
-        fetch(`${serverUrl}/speaksynth/health`, { method: 'GET' })
-            .then(response => {
-                if (response.ok) {
-                    status.querySelector('div').classList.add('bg-green-500');
-                    status.querySelector('div').classList.remove('bg-gray-300');
-                } else {
-                    status.querySelector('div').classList.add('bg-amber-500');
-                    status.querySelector('div').classList.remove('bg-gray-300');
-                }
-            })
-            .catch(() => {
-                status.querySelector('div').classList.add('bg-red-500');
-                status.querySelector('div').classList.remove('bg-gray-300');
-            });
-    });
-});
 </script>
 </body>
 

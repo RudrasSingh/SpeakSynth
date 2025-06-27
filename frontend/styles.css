@@ -653,32 +653,23 @@ body {
 
 /* Server switch notification */
 #serverSwitchNotification {
-  max-width: 400px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  min-width: 250px;
   animation-duration: 0.5s;
 }
 
-.animate__animated {
-  animation-duration: 1s;
-  animation-fill-mode: both;
+/* Ensure notification is always on top and visible */
+@media (max-width: 640px) {
+  #serverSwitchNotification {
+    bottom: 65px; /* Move up to avoid bottom navigation bars on mobile */
+    width: 90%;
+    max-width: none;
+  }
 }
 
-.animate__fadeIn {
-  animation-name: fadeIn;
-}
-
+/* Animation for notification */
 .animate__fadeOut {
   animation-name: fadeOut;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 @keyframes fadeOut {

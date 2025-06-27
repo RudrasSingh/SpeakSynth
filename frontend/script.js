@@ -7,12 +7,12 @@ if (typeof window.API_BASE_URL === "undefined") {
  * Multi-server configuration
  */
 window.SPEAKSYNTH_SERVERS = [
-  "https://speaksynth.onrender.com",      // Original server
-  "https://speaksynth2.onrender.com",     // New server #2
-  "https://speaksynth3-71nj.onrender.com" // New server #3
+  "https://speaksynth.onrender.com", // Original server
+  "https://speaksynth2.onrender.com", // New server #2
+  "https://speaksynth3-71nj.onrender.com", // New server #33
 ];
 
-// Make sure API_BASE_URL is properly initialized 
+// Make sure API_BASE_URL is properly initialized
 window.API_BASE_URL = window.SPEAKSYNTH_SERVERS[getApiServerId() || 0];
 
 /**
@@ -735,21 +735,20 @@ window.API_BASE_URL = getCurrentApiBaseUrl();
 console.log(`Using API endpoint: ${window.API_BASE_URL}`);
 
 /**
- * Show server switch notification with error type information
+ * Show server switch notification with improved styling for better visibility
  */
 function showServerSwitchNotification(errorType = "unknown_error") {
   const serverId = getApiServerId();
   const notification = document.createElement("div");
   notification.id = "serverSwitchNotification";
   notification.className =
-    "fixed bottom-4 right-4 bg-amber-50 border-l-4 border-amber-500 text-amber-800 p-4 rounded-lg shadow-lg z-50 animate__animated animate__fadeIn";
+    "fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-amber-50 border-2 border-amber-500 text-amber-800 p-4 rounded-lg shadow-xl z-50 animate__animated animate__fadeIn max-w-[90%] w-full md:w-auto md:max-w-md";
 
   // Create custom message based on error type
-  let errorMessage =
-    "Switching to backup server due to API error. Please wait...";
+  let errorMessage = "Switching to backup server due to API error...";
   if (errorType === "gpu_quota_exceeded") {
     errorMessage =
-      "Server GPU resources are at capacity. Switching to alternate server...";
+      "Server resources are at capacity. Switching to alternate server...";
   } else if (errorType === "synthesis_error") {
     errorMessage = "Speech synthesis failed. Trying alternate server...";
   } else if (errorType === "network_error") {
@@ -765,19 +764,14 @@ function showServerSwitchNotification(errorType = "unknown_error") {
           <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 102 0V6zm-1 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
         </svg>
       </div>
-      <div class="ml-3">
+      <div class="ml-3 flex-1">
         <p class="text-sm font-medium">
           ${errorMessage}
         </p>
         <p class="mt-1 text-xs text-amber-700">
-          Server ${serverId + 1} of ${window.SPEAKSYNTH_SERVERS.length}
+          Using server ${serverId + 1} of ${window.SPEAKSYNTH_SERVERS.length}
         </p>
       </div>
-      <button class="ml-4 text-amber-600 hover:text-amber-800" onclick="document.getElementById('serverSwitchNotification').remove()">
-        <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-        </svg>
-      </button>
     </div>
   `;
 
@@ -791,14 +785,14 @@ function showServerSwitchNotification(errorType = "unknown_error") {
 
   document.body.appendChild(notification);
 
-  // Auto-hide after 8 seconds
+  // Auto-hide after 6 seconds
   setTimeout(() => {
     const notification = document.getElementById("serverSwitchNotification");
     if (notification) {
       notification.classList.add("animate__fadeOut");
       setTimeout(() => notification.remove(), 1000);
     }
-  }, 8000);
+  }, 6000);
 }
 
 /**
