@@ -693,13 +693,15 @@
       });
     }
     
-    // Replace the current registerAndSyncApiKey function with this improved version
+    // Improved registerAndSyncApiKey function with better error handling
     async function registerAndSyncApiKey(email, browserId) {
       // First register with the current server to get an API key
       const serverId = getApiServerId();
       const baseUrl = getCurrentApiBaseUrl();
       
       try {
+        console.log(`Registering user with email ${email} on server ${serverId}: ${baseUrl}`);
+        
         // Generate API key on current server
         const response = await fetch(`${baseUrl}/speaksynth/api/v1/register`, {
           method: 'POST',
@@ -709,12 +711,14 @@
           body: JSON.stringify({
             email: email,
             browser_id: browserId
-          })
+          }),
+          // Add timeout for registration
+          signal: AbortSignal.timeout(10000)
         });
         
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.detail?.message || 'Registration failed');
+          throw new Error(errorData.detail?.message || `Registration failed with status ${response.status}`);
         }
         
         const data = await response.json();
@@ -728,57 +732,45 @@
         storeApiKey(data.api_key, email, serverId);
         
         // Now sync this API key to all other servers
+        // We'll do this sequentially to avoid overwhelming servers
         let syncErrors = 0;
-        const syncPromises = [];
         
         for (let i = 0; i < window.SPEAKSYNTH_SERVERS.length; i++) {
           // Skip the current server as we just registered there
           if (i === serverId) continue;
           
-          const syncPromise = (async () => {
-            try {
-              const otherServerUrl = window.SPEAKSYNTH_SERVERS[i];
-              console.log(`Syncing API key to server ${i}: ${otherServerUrl}`);
-              
-              const syncResponse = await fetch(`${otherServerUrl}/speaksynth/api/v1/sync-key`, {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'X-API-Key': data.api_key
-                },
-                body: JSON.stringify({
-                  email: email,
-                  browser_id: browserId
-                }),
-                // Add timeout
-                signal: AbortSignal.timeout(5000)
-              });
-              
-              if (syncResponse.ok) {
-                console.log(`Successfully synced API key to server ${i}`);
-                return true;
-              } else {
-                console.warn(`Failed to sync API key to server ${i} - HTTP ${syncResponse.status}`);
-                syncErrors++;
-                return false;
-              }
-            } catch (syncError) {
-              console.error(`Error syncing API key to server ${i}:`, syncError);
+          try {
+            const otherServerUrl = window.SPEAKSYNTH_SERVERS[i];
+            console.log(`Syncing API key to server ${i}: ${otherServerUrl}`);
+            
+            const syncResponse = await fetch(`${otherServerUrl}/speaksynth/api/v1/sync-key`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-API-Key': data.api_key
+              },
+              body: JSON.stringify({
+                email: email,
+                browser_id: browserId
+              }),
+              // Add timeout
+              signal: AbortSignal.timeout(8000)
+            });
+            
+            if (syncResponse.ok) {
+              const syncResult = await syncResponse.json();
+              console.log(`Successfully synced API key to server ${i}:`, syncResult);
+            } else {
+              console.warn(`Failed to sync API key to server ${i} - HTTP ${syncResponse.status}`);
               syncErrors++;
-              return false;
             }
-          })();
+          } catch (syncError) {
+            console.error(`Error syncing API key to server ${i}:`, syncError);
+            syncErrors++;
+          }
           
-          syncPromises.push(syncPromise);
-        }
-        
-        // Wait for all sync operations to complete but don't fail if some fail
-        await Promise.allSettled(syncPromises);
-        
-        // Log sync status
-        if (syncErrors > 0) {
-          console.warn(`API key synced with some errors (${syncErrors} failures)`);
-          showStatus(`API key generated! Note: Sync to some backup servers failed.`, "info");
+          // Small delay between sync requests
+          await new Promise(resolve => setTimeout(resolve, 500));
         }
         
         return {
@@ -791,7 +783,7 @@
         console.error("Registration error:", error);
         return {
           success: false,
-          error: error.message
+          error: error.message || "Unknown error during registration"
         };
       }
     }

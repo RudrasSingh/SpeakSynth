@@ -7,10 +7,13 @@ if (typeof window.API_BASE_URL === "undefined") {
  * Multi-server configuration
  */
 window.SPEAKSYNTH_SERVERS = [
-  "https://speaksynth.onrender.com",
-  "https://speaksynth-6ck5.onrender.com",
-  "https://speaksynth3.onrender.com",
+  "https://speaksynth.onrender.com",      // Original server
+  "https://speaksynth2.onrender.com",     // New server #2
+  "https://speaksynth3-71nj.onrender.com" // New server #3
 ];
+
+// Make sure API_BASE_URL is properly initialized 
+window.API_BASE_URL = window.SPEAKSYNTH_SERVERS[getApiServerId() || 0];
 
 /**
  * Initialize mobile menu toggle functionality
@@ -258,7 +261,7 @@ window.addEventListener("unhandledrejection", function (event) {
 });
 
 /**
- * Sync API key to the current server
+ * Sync API key to the current server with improved error handling
  */
 async function syncApiKeyToServer() {
   const apiKey = localStorage.getItem("speaksynth_api_key");
@@ -278,6 +281,9 @@ async function syncApiKeyToServer() {
 
     console.log(`Syncing API key to server: ${baseUrl}`);
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
+
     const response = await fetch(`${baseUrl}/speaksynth/api/v1/sync-key`, {
       method: "POST",
       headers: {
@@ -288,10 +294,23 @@ async function syncApiKeyToServer() {
         email: email,
         browser_id: browserId,
       }),
+      signal: controller.signal,
     });
 
+    clearTimeout(timeoutId);
+
     if (!response.ok) {
-      console.error(`API key sync failed: ${response.status}`);
+      const status = response.status;
+      console.error(`API key sync failed: ${status}`);
+
+      // Try to get more details about the error
+      try {
+        const errorData = await response.json();
+        console.error("Sync error details:", errorData);
+      } catch (e) {
+        // Ignore error reading body
+      }
+
       return false;
     }
 

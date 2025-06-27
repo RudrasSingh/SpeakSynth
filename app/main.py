@@ -154,24 +154,54 @@ async def sync_api_key(
             
         try:
             cur = conn.cursor()
+            today = datetime.now().date().isoformat()  # Ensure date is stored as string
+            
+            # First check if the tables exist with proper schema
+            cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='users'")
+            if not cur.fetchone():
+                # If table doesn't exist, create it
+                from app.db import create_tables
+                create_tables(conn)
+                logging.info("Created missing users table during sync operation")
             
             # Check if user exists by browser_id
             cur.execute("SELECT email FROM users WHERE browser_id = ?", (browser_id,))
             existing_user = cur.fetchone()
             
+            # Generate a unique ID for this user if needed
+            unique_id = f"{email}-{browser_id[:16]}"
+            
             if existing_user:
                 # User exists, update their API key to match the one from the other server
-                cur.execute(
-                    "UPDATE users SET api_key = ? WHERE browser_id = ?",
-                    (x_api_key, browser_id)
-                )
+                try:
+                    cur.execute(
+                        "UPDATE users SET api_key = ? WHERE browser_id = ?",
+                        (x_api_key, browser_id)
+                    )
+                except sqlite3.OperationalError as e:
+                    # If update fails due to schema mismatch, try with the alternate schema
+                    if "no such column" in str(e):
+                        cur.execute(
+                            "UPDATE users SET api_key = ?, last_used = ? WHERE browser_id = ?",
+                            (x_api_key, today, browser_id)
+                        )
+                logging.info(f"Updated API key for existing user with browser_id {browser_id[:8]}...")
             else:
                 # User doesn't exist, create new entry with the provided API key
-                today = datetime.now().date()
-                cur.execute(
-                    "INSERT INTO users (email, browser_id, api_key, created_at, last_used, daily_count) VALUES (?, ?, ?, ?, ?, 0)",
-                    (email, browser_id, x_api_key, today, today)
-                )
+                try:
+                    # Try inserting with the schema from db.py
+                    cur.execute(
+                        "INSERT INTO users (api_key, email, browser_id, unique_id, daily_count, last_used, created_at) VALUES (?, ?, ?, ?, 0, ?, ?)",
+                        (x_api_key, email, browser_id, unique_id, today, today)
+                    )
+                except sqlite3.OperationalError:
+                    # If that fails, try with the alternate schema mentioned in the sync endpoint
+                    cur.execute(
+                        "INSERT INTO users (email, browser_id, api_key, created_at, last_used, daily_count) VALUES (?, ?, ?, ?, ?, 0)",
+                        (email, browser_id, x_api_key, today, today)
+                    )
+                
+                logging.info(f"Created new user during sync with browser_id {browser_id[:8]}...")
                 
             conn.commit()
             
@@ -182,7 +212,14 @@ async def sync_api_key(
             
         except Exception as e:
             conn.rollback()
-            raise e
+            logging.exception(f"Database error during API key sync: {str(e)}")
+            raise HTTPException(
+                status_code=500,
+                detail={
+                    "message": f"Database error: {str(e)}",
+                    "error_type": "database_error"
+                }
+            )
         finally:
             conn.close()
             
@@ -193,9 +230,8 @@ async def sync_api_key(
         raise HTTPException(
             status_code=500,
             detail={
-                "message": "Failed to sync API key. Please try again later.",
-                "error_type": "sync_error",
-                "error": str(e)[:200]
+                "message": f"Failed to sync API key: {str(e)}",
+                "error_type": "sync_error"
             }
         )
 
