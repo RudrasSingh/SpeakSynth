@@ -231,12 +231,12 @@
                   </svg>
                   <div class="absolute inset-0 flex items-center justify-center flex-col">
                     <span id="usageValue" class="text-4xl font-bold text-gray-800">0</span>
-                    <span class="text-lg text-gray-500 -mt-1">/ 50</span>
+                    <span class="text-lg text-gray-500 -mt-1">/ 15</span>
                   </div>
                 </div>
                     
                 <div class="flex items-center justify-center text-gray-800">
-                  <span id="remainingValue" class="text-2xl font-medium">50</span>
+                  <span id="remainingValue" class="text-2xl font-medium">15</span>
                   <span class="ml-2">requests remaining</span>
                 </div>
                 
@@ -257,12 +257,14 @@
           
           <div class="bg-gray-50 rounded-xl p-4 sm:p-6 border border-gray-100 overflow-x-auto">
             <pre class="text-sm text-gray-700 font-mono"><code>curl -X POST https://speaksynth.onrender.com/speaksynth/api/v1/synthesize \
-  -H "Content-Type: application/json" \
-  -H "X-API-Key: <span class="text-blue-600">YOUR_API_KEY</span>" \
-  -d '{
-    "text": "Hello, welcome to SpeakSynth!",
-    "format": 1
-  }'</code></pre>
+-H "Content-Type: application/json" \
+-H "X-API-Key: YOUR_API_KEY_HERE" \
+-d '{
+  "text": "Hello, world!",
+  "format": 1,
+  "voice": "sabrina"
+}' \
+--output speech.wav</code></pre>
           </div>
           
           <div class="mt-6 flex justify-end">
@@ -444,7 +446,7 @@
       
       // Get the values we need
       const used = data.daily_usage || 0;
-      const total = data.daily_limit || 50;
+      const total = data.daily_limit || 15;
       const remaining = data.remaining || (total - used);
       
       // Update usage numbers

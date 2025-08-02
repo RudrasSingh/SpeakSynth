@@ -37,8 +37,8 @@ def enforce_daily_limit(x_api_key: str = Header(...)):
             # Change %s to ? for SQLite and use proper date formatting
             cur.execute("UPDATE users SET daily_count = 1, last_used = ? WHERE api_key = ?", 
                       (today.isoformat(), x_api_key))
-        elif count >= 50:
-            raise HTTPException(status_code=429, detail="Daily limit (50) exceeded")
+        elif count >= 15:  # Changed from 50 to 15
+            raise HTTPException(status_code=429, detail="Daily limit (15) exceeded")
         else:
             # Change %s to ? for SQLite
             cur.execute("UPDATE users SET daily_count = daily_count + 1 WHERE api_key = ?", 

@@ -1,11 +1,16 @@
-from pydantic import BaseModel, Field, field_serializer, EmailStr
-from enum import IntEnum
+from pydantic import BaseModel, Field, EmailStr
+from enum import IntEnum, Enum
 from typing import Optional, Literal
 
-class AudioFormat(IntEnum):
+class AudioFormat(int, Enum):
     """Audio format options for speech synthesis."""
     WAV = 1
     OPUS = 2
+
+class VoiceModel(str, Enum):
+    SABRINA = "sabrina"
+    PAUL = "paul"      # Jarvis-style voice
+    MORGAN = "morgan"  # Morgan Freeman-style voice
 
 class SpeakSynthRequest(BaseModel):
     """
@@ -16,11 +21,9 @@ class SpeakSynthRequest(BaseModel):
         format: Audio format for the output (1 = WAV, 2 = OPUS)
     """
     text: str = Field(..., description="Text content to synthesize into speech")
-    format: Literal[1, 2] = Field(
-        default=1, 
-        description="Output audio format: 1=WAV, 2=OPUS"
-    )
-    
+    format: AudioFormat = AudioFormat.WAV
+    voice: VoiceModel = VoiceModel.SABRINA  # Default voice parameter
+
     model_config = {
         "json_schema_extra": {
             "example": {

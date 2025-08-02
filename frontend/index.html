@@ -245,8 +245,18 @@
         <a href="dashboard.html" class="block py-3 text-gray-700 hover:text-blue-500 font-medium">Insights</a>
     </div>
 
+    <!-- Announcement Banner - NEW -->
+    <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-6 text-center relative overflow-hidden">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex flex-wrap items-center justify-center pt-2 px-4 space-x-2 text-sm font-medium text-center">
+                <span class="text-base font-medium">🎉 Say hello to two iconic voices!! Talk like J.A.R.V.I.S. or narrate like Morgan Freeman — both voices now live on SpeakSynth!</span>
+                <a href="playground.html" class="underline hover:no-underline font-semibold text-base">Try Now</a>
+            </div>
+        </div>
+    </div>
+    
 <!-- Hero Section -->
-<section class="hero-gradient text-white py-24 lg:py-32 relative overflow-hidden">
+<section class="hero-gradient text-white py-24 lg:py-32 relative overflow-hidden" style="padding-top: 70px;">
     <div class="particles">
         <div class="particle" style="left:10%;animation-delay:0s;"></div>
         <div class="particle" style="left:20%;animation-delay:1s;"></div>
@@ -258,7 +268,7 @@
     </div>
 
     
-    <div class="max-w-3.5xl mx-auto px-6 lg:px-14 relative z-10">
+    <div class="max-w-3.5xl mx-auto px-6 lg:px-14 relative z-10 ">
         <div class="text-center">           
             <div class="animate__animated animate__fadeIn">
                 <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 font-display leading-tight ">
@@ -330,8 +340,9 @@
                         <span class="code-line">      <span class="code-string">'X-API-Key'</span>: <span class="code-string">'YOUR_API_KEY'</span></span>
                         <span class="code-line">    },</span>
                         <span class="code-line">    body: JSON.stringify({</span>
-                        <span class="code-line">      text: <span class="code-string">"Hello, this is a premium voice!"</span>,</span>
-                        <span class="code-line">      format: 1 <span class="code-comment">// 1 = WAV, 2 = OPUS</span></span>
+                        <span class="code-line">      text: <span class="code-string">"Hello, this is Paul speaking!"</span>,</span>
+                        <span class="code-line">      format: 1, <span class="code-comment">// 1 = WAV, 2 = OPUS</span></span>
+                        <span class="code-line">      voice: <span class="code-string">"paul"</span> <span class="code-comment">// "sabrina", "paul", "morgan"</span></span>
                         <span class="code-line">    })</span>
                         <span class="code-line">  });</span>
                         <span class="code-line">&nbsp;</span>
@@ -356,7 +367,7 @@
                     
                     <div class="bg-emerald-50 border-l-4 border-emerald-500 p-6 rounded-lg">
                         <h3 class="text-xl font-bold text-gray-800 mb-2">Generous Free Tier</h3>
-                        <p class="text-gray-700">50 free API calls per day. Perfect for testing, small projects, or personal use. No credit card required.</p>
+                        <p class="text-gray-700">15 free API calls per day. Perfect for testing, small projects, or personal use. No credit card required.</p>
                     </div>
                 </div>
             </div>
@@ -400,11 +411,14 @@
                     </div>
                 </div>
                 
-                <!-- Voice Card 2: Morgan-Style (coming soon) -->
-                <div class="voice-card bg-white rounded-2xl border border-gray-200 shadow-sm p-6 hover:shadow-lg animate__animated animate__fadeInUp" style="height: 280px; display: flex; flex-direction: column; animation-delay: 0.1s;">
+                <!-- Voice Card 2: Morgan-Style - WITH NEW TAG-->
+                <div class="voice-card bg-white rounded-2xl border border-gray-200 shadow-sm p-6 hover:shadow-lg cursor-pointer animate__animated animate__fadeInUp relative" style="height: 280px; display: flex; flex-direction: column; animation-delay: 0.1s;">
+                    <!-- NEW TAG -->
+                    <div class="absolute top-4 right-4 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">NEW</div>
+                    
                     <div class="flex items-center">
-                        <div class="w-14 h-14 rounded-full bg-cyan-100 text-cyan-600 flex items-center justify-center text-2xl font-bold">
-                            MC
+                        <div class="w-14 h-14 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-2xl font-bold">
+                            MF
                         </div>
                         <div class="ml-4">
                             <h4 class="text-xl font-semibold text-gray-800">Morgan-Style</h4>
@@ -414,33 +428,47 @@
                     <div class="mt-4 text-gray-700 flex-grow overflow-hidden text-sm">
                         Perfect for narrations, documentaries, and professional voiceovers that require gravitas and authority.
                     </div>
-                    <div class="mt-auto pt-4 border-t border-gray-100">
-                        <span class="inline-block px-4 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">Coming Soon</span>
+                    <div class="mt-auto pt-4 border-t border-gray-100 flex items-center">
+                        <div class="sound-wave preview-wave" style="height: 24px;">
+                            <div class="bar" style="height: 14px; background: #2563eb;"></div>
+                            <div class="bar" style="height: 20px; background: #2563eb;"></div>
+                            <div class="bar" style="height: 18px; background: #2563eb;"></div>
+                            <div class="bar" style="height: 12px; background: #2563eb;"></div>
+                            <div class="bar" style="height: 16px; background: #2563eb;"></div>
+                        </div>
+                        <span class="ml-3 text-sm text-gray-600 preview-text">Preview</span>
                     </div>
                 </div>
-                
-                <!-- Voice Card 3: Arijit-Style (coming soon) -->
-                <div class="voice-card bg-white rounded-2xl border border-gray-200 shadow-sm p-6 hover:shadow-lg animate__animated animate__fadeInUp" style="height: 280px; display: flex; flex-direction: column; animation-delay: 0.2s;">
+
+                <!-- Voice Card 3: Paul-Style (Jarvis) - WITH NEW TAG -->
+                <div class="voice-card bg-white rounded-2xl border border-gray-200 shadow-sm p-6 hover:shadow-lg cursor-pointer animate__animated animate__fadeInUp relative" style="height: 280px; display: flex; flex-direction: column; animation-delay: 0.2s;">
+                    <!-- NEW TAG -->
+                    <div class="absolute top-4 right-4 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">NEW</div>
+                    
                     <div class="flex items-center">
-                        <div class="w-14 h-14 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-2xl font-bold">
-                            AS
-                        </div>
+                        <div class="w-14 h-14 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-2xl font-bold">JS</div>
                         <div class="ml-4">
-                            <h4 class="text-xl font-semibold text-gray-800">Arijit-Style</h4>
-                            <p class="text-gray-500">Soulful, melodic voice</p>
+                            <h4 class="text-xl font-semibold text-gray-800">Jarvis-Style</h4>
+                            <p class="text-gray-500">AI Assistant voice</p>
                         </div>
                     </div>
                     <div class="mt-4 text-gray-700 flex-grow overflow-hidden text-sm">
-                        Perfect for emotional narrations, music content, and applications needing a warm, soulful vocal tone.
+                        Sophisticated, intelligent, and calm—perfect for AI assistants, technical content, and professional applications.
                     </div>
-                    <div class="mt-auto pt-4 border-t border-gray-100">
-                        <span class="inline-block px-4 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">Coming Soon</span>
+                    <div class="mt-auto pt-4 border-t border-gray-100 flex items-center">
+                        <div class="sound-wave preview-wave" style="height: 24px;">
+                            <div class="bar" style="height: 14px; background: #d97706;"></div>
+                            <div class="bar" style="height: 20px; background: #d97706;"></div>
+                            <div class="bar" style="height: 18px; background: hsl(32, 95%, 44%);"></div>
+                            <div class="bar" style="height: 12px; background: #d97706;"></div><div class="bar" style="height: 16px; background: #d97706;"></div>
+                            </div>
+                            <span class="ml-3 text-sm text-gray-600 preview-text">Preview</span>
+                        </div>
                     </div>
-                </div>
             </div>
-            
+
             <div class="text-center mt-12">
-                <a href="playground.html" class="gradient-btn inline-block px-8 py-4 rounded-xl text-white font-medium transition shadow-lg">
+                <a href="playground.html" class="gradient-btn inline-block px-8 py-4 rounded-xl text-white font-medium transition shadow-lg hover:shadow-2xl hover:-translate-y-1">
                     Try Voices in Playground
                 </a>
             </div>
@@ -651,31 +679,33 @@
             let activeCard = null;
 
             // Add click events for voice cards to play sample audio (only for Sabrina-Style)
-            document.querySelectorAll('.voice-card').forEach(card => {
-                // Check if this card has sound-wave bars (only Sabrina-Style has them)
+            document.querySelectorAll('.voice-card').forEach((card, index) => {
                 const bars = card.querySelectorAll('.bar');
                 if (bars.length > 0) {
                     const previewText = card.querySelector('.preview-text');
                     
-                    // Play/Stop functionality with toggle
+                    // Voice-specific audio files (you'll need to add these to your assets)
+                    const voiceAudioFiles = {
+                        0: "assets/sabrina.mp3",  // Sabrina
+                        1: "assets/morgan.wav",     // Paul (Jarvis)
+                        2: "assets/jarvis.wav"    // Arijit
+                    };
+                    
                     card.addEventListener('click', function (e) {
                         if (isPlaying) {
-                            // If already playing, stop it
                             stopAudioPreview();
                         } else {
-                            // Otherwise, play the audio
                             isPlaying = true;
                             activeCard = card;
                             
-                            // Use the local audio file
-                            previewAudio.src = sampleAudioUrl;
+                            // Use voice-specific audio file
+                            previewAudio.src = voiceAudioFiles[index] || "assets/speaksynth_output.mp3";
                             
-                            // Update text to "Playing..."
+                            // Update text and play audio
                             if (previewText) {
                                 previewText.textContent = "Playing...";
                             }
 
-                            // Play the audio
                             previewAudio.play().catch(err => {
                                 console.error("Failed to play audio:", err);
                                 isPlaying = false;
@@ -685,12 +715,11 @@
                                 }
                             });
 
-                            // Animate the sound waves while audio plays
+                            // Animate bars
                             bars.forEach(bar => {
                                 bar.style.animation = 'sound-wave-animation 0.5s infinite ease-in-out';
                             });
 
-                            // Reset animation when audio ends
                             previewAudio.onended = function () {
                                 stopAudioPreview();
                             };

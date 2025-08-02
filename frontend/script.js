@@ -611,13 +611,14 @@ function updateUsageDisplay(data) {
 
   // Get the values we need
   const used = data.daily_usage || 0;
-  const total = data.daily_limit || 50;
+  const total = data.daily_limit || 15; // Changed default from 50 to 15
   const remaining = data.remaining || total - used;
 
   // Update usage numbers
   const usageValue = document.getElementById("usageValue");
   const remainingValue = document.getElementById("remainingValue");
   const usageCircle = document.getElementById("usageCircle");
+  const usageLimitValue = document.getElementById("usageLimitValue");
 
   if (usageValue) {
     usageValue.textContent = used;
@@ -627,28 +628,27 @@ function updateUsageDisplay(data) {
     remainingValue.textContent = remaining;
   }
 
+  if (usageLimitValue) {
+    usageLimitValue.textContent = total;
+  }
+
   // Update usage circle
   if (usageCircle) {
     const percentage = Math.min(100, (used / total) * 100);
+    usageCircle.setAttribute("stroke-dasharray", `${percentage}, 100`);
 
-    // For SVG path dasharray
-    if (usageCircle.tagName.toLowerCase() === "path") {
-      usageCircle.setAttribute("stroke-dasharray", `${percentage}, 100`);
-
-      // Change color based on usage
-      if (percentage > 80) {
-        usageCircle.setAttribute("stroke", "#EF4444"); // Red
-      } else if (percentage > 50) {
-        usageCircle.setAttribute("stroke", "#F59E0B"); // Amber
-      } else {
-        usageCircle.setAttribute("stroke", "#3B82F6"); // Blue
-      }
-    }
-    // For elements using style property
-    else {
-      usageCircle.style.strokeDasharray = `${percentage}, 100`;
+    // Change color based on usage (more sensitive for 15 limit)
+    if (percentage > 85) {
+      usageCircle.setAttribute("stroke", "#EF4444"); // Red
+    } else if (percentage > 60) {
+      usageCircle.setAttribute("stroke", "#F59E0B"); // Amber
+    } else {
+      usageCircle.setAttribute("stroke", "#3B82F6"); // Blue
     }
   }
+
+  // Update playground usage if present
+  updatePlaygroundUsage(used, total);
 
   // Update date
   const usageDate = document.getElementById("usageDate");
@@ -660,12 +660,7 @@ function updateUsageDisplay(data) {
       day: "numeric",
     });
   }
-
-  console.log("Usage display updated successfully");
 }
-
-// Remove or comment out the duplicate updateUsageDisplay function
-// function updateUsageDisplay(used, total, remaining) { ... }
 
 /**
  * Update usage display in the playground
@@ -678,11 +673,11 @@ function updatePlaygroundUsage(used, total) {
     const percentage = (used / total) * 100;
     usageBar.style.width = `${percentage}%`;
 
-    // Change color based on usage
+    // Change color based on usage (more sensitive for 15 limit)
     usageBar.classList.remove("bg-blue-500", "bg-amber-500", "bg-red-500");
-    if (percentage > 80) {
+    if (percentage > 85) {
       usageBar.classList.add("bg-red-500");
-    } else if (percentage > 50) {
+    } else if (percentage > 60) {
       usageBar.classList.add("bg-amber-500");
     } else {
       usageBar.classList.add("bg-blue-500");

@@ -132,8 +132,9 @@
                             <label class="block text-sm text-gray-600 mb-2 font-medium">Voice Model</label>
                             <select id="voiceModel"
                                 class="w-full bg-gray-50 border border-gray-200 rounded-lg py-3 px-4 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
-                                <option value="sabrina" selected>Sabrina (Beta)</option>
-                                <option value="future" disabled>More voices coming soon...</option>
+                                <option value="sabrina" selected>Sabrina (Bright & Engaging)</option>
+                                <option value="paul">Paul (Jarvis-Style AI Assistant) 🆕</option>
+                                <option value="morgan">Morgan (Deep, Authoritative) 🆕</option>
                             </select>
                         </div>
                     </div>
@@ -253,8 +254,16 @@
                 </div>
             </div>
 
+            <!-- Usage Stats -->
+            <div class="mt-8 bg-gray-50 rounded-xl border border-gray-200 p-6">
+                <h3 class="text-lg font-semibold mb-3 text-gray-800">Daily Usage</h3>
+                <div id="usageData" class="text-gray-600">
+                    <span id="usageValue" class="font-medium text-2xl text-blue-600">0</span>/<span id="usageLimitValue" class="text-lg">15</span> requests used today
+                </div>
+            </div>
+
             <!-- Information Panel -->
-            <div class="mt-10 bg-blue-50 rounded-xl border border-blue-100 p-8">
+            <div class="mt-8 bg-blue-50 rounded-xl border border-blue-100 p-8">
                 <h2 class="text-2xl font-semibold mb-4 font-display text-gray-800">About the Playground</h2>
                 <p class="text-gray-600 mb-6">
                     The SpeakSynth playground allows you to try our text-to-speech API directly in your
@@ -263,8 +272,8 @@
 
                 <div class="flex flex-wrap gap-3 mb-6">
                     <div class="bg-white px-4 py-2 rounded-lg text-sm font-medium text-gray-600 border border-gray-200">Audio preview only</div>
-                    <div class="bg-white px-4 py-2 rounded-lg text-sm font-medium text-gray-600 border border-gray-200">Counts toward daily limit</div>
-                    <div class="bg-white px-4 py-2 rounded-lg text-sm font-medium text-gray-600 border border-gray-200">Current voice: Sabrina (Beta)</div>
+                    <div class="bg-white px-4 py-2 rounded-lg text-sm font-medium text-gray-600 border border-gray-200">Counts toward daily limit (15)</div>
+                    <div class="bg-white px-4 py-2 rounded-lg text-sm font-medium text-gray-600 border border-gray-200">Multiple voice options available</div>
                 </div>
 
                 <div class="flex items-center">
@@ -275,16 +284,6 @@
                             <path d="m12 5 7 7-7 7"></path>
                         </svg>
                     </a>
-                </div>
-            </div>
-
-            <!-- Usage Stats (New) -->
-            <div class="flex items-center mt-1">
-                <div id="usageLoading" class="loader-container py-2">
-                    <div class="usage-loader" style="width: 24px; height: 24px; border-width: 2px;"></div>
-                </div>
-                <div id="usageData" class="hidden">
-                    <span id="usageValue" class="font-medium">0</span>/<span id="usageLimitValue">50</span> requests used today
                 </div>
             </div>
         </div>
@@ -357,7 +356,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // Fetch usage data
     fetchUsageData();
     
-    // Setup synthesis functionality
+    // Voice selection functionality
+    const voiceSelect = document.getElementById('voiceModel');
+    let selectedVoice = 'sabrina'; // Default voice
+    
+    if (voiceSelect) {
+        voiceSelect.addEventListener('change', function() {
+            selectedVoice = this.value;
+            console.log('Voice changed to:', selectedVoice);
+            
+            // Update the about section to reflect current voice
+            updateVoiceInfo(selectedVoice);
+        });
+    }
+    
+    // Setup synthesis functionality with voice support
     if (synthesizeBtn) {
         synthesizeBtn.addEventListener('click', async function() {
             const textInput = document.getElementById('playgroundText');
@@ -367,9 +380,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             const text = textInput.value.trim();
-            const format = currentFormat; // Use the format chosen by the user
+            const format = currentFormat;
+            const voice = selectedVoice; // Include selected voice
             
-            console.log("Starting synthesis:", { text: text.substring(0, 20) + "...", format });
+            console.log("Starting synthesis:", { 
+                text: text.substring(0, 20) + "...", 
+                format, 
+                voice 
+            });
             
             // Show loading state
             showLoadingState();
@@ -379,7 +397,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     method: 'POST',
                     body: JSON.stringify({
                         text: text,
-                        format: format
+                        format: format,
+                        voice: voice  // Include voice in request
                     })
                 });
                 
@@ -397,31 +416,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     // Create blob URL and store it
                     const audioUrl = URL.createObjectURL(audioBlob);
+                    currentAudioUrl = audioUrl;
                     blobUrls.push(audioUrl);
-                    
-                    // Create audio element
-                    const audio = new Audio(audioUrl);
-                    
-                    // Add event listener to revoke URL after playing
-                    audio.addEventListener('ended', function() {
-                        URL.revokeObjectURL(audioUrl);
-                        blobUrls.splice(blobUrls.indexOf(audioUrl), 1);
-                    });
                     
                     // Show player with our controlled URL
                     showPlayerState(audioUrl);
-                    
-                    // Play audio
-                    const playPromise = audio.play();
-                    
-                    // Handle autoplay restrictions
-                    if (playPromise !== undefined) {
-                        playPromise.catch(error => {
-                            console.warn("Auto-play prevented by browser:", error);
-                            // Add visual indication to click and play manually
-                            showPlayButton(audio, audioUrl);
-                        });
-                    }
                     
                     // Show status and refresh usage data
                     showStatus("Speech synthesized successfully!", "success");
@@ -533,12 +532,15 @@ document.addEventListener('DOMContentLoaded', function() {
         setupPlayerControls(audioEl);
         
         // Try to autoplay
-        audioEl.play().then(() => {
-            if (pauseIcon) pauseIcon.classList.remove('hidden');
-            if (playIcon) playIcon.classList.add('hidden');
-        }).catch(err => {
-            console.log("Auto-play prevented by browser:", err);
-        });
+        const playPromise = audioEl.play();
+        if (playPromise !== undefined) {
+            playPromise.then(() => {
+                if (pauseIcon) pauseIcon.classList.remove('hidden');
+                if (playIcon) playIcon.classList.add('hidden');
+            }).catch(err => {
+                console.log("Auto-play prevented by browser:", err);
+            });
+        }
     }
 
     function setupPlayerControls(audioEl) {
@@ -658,107 +660,71 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    // Add missing UI functionality
+    const textInput = document.getElementById('playgroundText');
+    const charCount = document.getElementById('charCount');
+    const resetTextBtn = document.getElementById('resetTextBtn');
+    const tryAgainBtn = document.getElementById('tryAgainBtn');
+    
+    // Character count functionality
+    if (textInput && charCount) {
+        function updateCharCount() {
+            const count = textInput.value.length;
+            charCount.textContent = `${count}/500 characters`;
+            
+            if (count > 500) {
+                charCount.classList.add('text-red-500');
+                charCount.classList.remove('text-gray-500');
+            } else {
+                charCount.classList.remove('text-red-500');
+                charCount.classList.add('text-gray-500');
+            }
+        }
+        
+        textInput.addEventListener('input', updateCharCount);
+        updateCharCount(); // Initial count
+    }
+    
+    // Reset text button functionality
+    if (resetTextBtn && textInput) {
+        resetTextBtn.addEventListener('click', function() {
+            textInput.value = 'Experience the future of text-to-speech with SpeakSynth. Our API transforms your words into natural sounding voice instantly.';
+            if (charCount) {
+                const count = textInput.value.length;
+                charCount.textContent = `${count}/500 characters`;
+            }
+        });
+    }
+    
+    // Try again button functionality
+    if (tryAgainBtn) {
+        tryAgainBtn.addEventListener('click', function() {
+            hideAllStates();
+            document.getElementById('initialState').classList.remove('hidden');
+        });
+    }
+    
     // Clean up object URLs when leaving the page
     window.addEventListener('beforeunload', function() {
         if (currentAudioUrl) {
             URL.revokeObjectURL(currentAudioUrl);
         }
+        blobUrls.forEach(url => URL.revokeObjectURL(url));
     });
+    
+    // Function to update voice information
+    function updateVoiceInfo(voice) {
+        const voiceDescriptions = {
+            sabrina: "Sabrina (Bright & Engaging)",
+            paul: "Paul (Jarvis-Style AI Assistant) 🆕", 
+            morgan: "Morgan (Deep, Authoritative) 🆕"
+        };
+        
+        // Update any voice display elements if they exist
+        console.log(`Current voice: ${voiceDescriptions[voice]}`);
+    }
 });
 
-// Modify your audio playback code:
-async function handleSynthesis(text) {
-  try {
-    showStatus("Synthesizing speech...", "info");
-    showLoadingState();
-    
-    const response = await makeApiRequest('/speaksynth/api/v1/synthesize', {
-      method: 'POST',
-      body: JSON.stringify({
-        text: text,
-        format: format
-      })
-    });
-    
-    // Process successful response...
-    
-  } catch (error) {
-    console.error("Synthesis failed:", error);
-    
-    // Show user-friendly error message based on error type
-    if (error.message.includes("Failed to fetch")) {
-      showStatus("Network error. Check your connection or try again later.", "error");
-    } else if (error.message.includes("CORS")) {
-      showStatus("Server connection issue. Try refreshing the page.", "error");
-    } else {
-      showStatus("Error: " + error.message, "error");
-    }
-    
-    showErrorState();
-  }
-}
-
-// Example code to add to playground.html
-async function synthesizeText(text, format = 1) {
-  const playBtn = document.getElementById('playSynthesizedBtn');
-  const synthesizeBtn = document.getElementById('synthesizePlaygroundBtn');
-  
-  try {
-    if (synthesizeBtn) {
-      synthesizeBtn.disabled = true;
-      synthesizeBtn.innerHTML = '<div class="audio-loader mx-auto"></div>';
-    }
-    
-    // This will now automatically switch servers on any error
-    const response = await makeApiRequest('/speaksynth/api/v1/synthesize', {
-      method: 'POST',
-      body: JSON.stringify({
-        text: text,
-        format: format
-      })
-    });
-    
-    // If we get here, response was successful
-    const blob = await response.blob();
-    const audioUrl = URL.createObjectURL(blob);
-    
-    // Update audio player with new audio
-    const audioElement = document.getElementById('synthesizedAudio');
-    if (audioElement) {
-      audioElement.src = audioUrl;
-      audioElement.oncanplaythrough = function() {
-        // Enable play button when audio is ready
-        if (playBtn) {
-          playBtn.disabled = false;
-        }
-      };
-    }
-    
-    return audioUrl;
-  } catch (error) {
-    console.error("Synthesis failed:", error);
-    
-    // Show error message
-    const errorMessage = document.getElementById('errorMessage');
-    if (errorMessage) {
-      errorMessage.textContent = `Error: ${error.message}`;
-      errorMessage.classList.remove('hidden');
-      
-      // Hide after 8 seconds
-      setTimeout(() => {
-        errorMessage.classList.add('hidden');
-      }, 8000);
-    }
-    
-    throw error;
-  } finally {
-    // Reset button state
-    if (synthesizeBtn) {
-      synthesizeBtn.disabled = false;
-      synthesizeBtn.innerHTML = 'Synthesize Speech';
-    }
-  }
-}
 </script>
 </body>
 

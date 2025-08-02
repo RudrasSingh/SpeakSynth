@@ -311,9 +311,10 @@ Content-Type: application/json</code></pre>
                                 </svg>
                                 Request Body
                             </h4>
-                            <pre class="language-json bg-gray-50 rounded-lg p-4 overflow-x-auto mb-6"><code>{
-  "text": "Hello, this is a test of the speech synthesis system.",
-  "format": 1  // 1 = WAV, 2 = OPUS
+                            <pre class="language-json bg-gray-50 rounded-lg p-4 overflow-x-auto"><code>{
+  "text": "Hello, this is a test message.",
+  "format": 1,
+  "voice": "sabrina"
 }</code></pre>
                             
                             <h4 class="flex items-center text-sm font-semibold uppercase tracking-wider text-gray-500 mb-3">
@@ -345,7 +346,7 @@ Content-Type: application/json</code></pre>
                             </svg>
                             <div>
                                 <span class="font-medium text-gray-800">Daily limit:</span>
-                                <span class="text-gray-700"> 50 requests per day</span>
+                                <span class="text-gray-700"> 15 requests per day</span>
                             </div>
                         </li>
                         <li class="flex items-start">
@@ -353,8 +354,17 @@ Content-Type: application/json</code></pre>
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                             </svg>
                             <div>
-                                <span class="font-medium text-gray-800">API restriction:</span>
-                                <span class="text-gray-700"> 1 API key per User</span>
+                                <span class="font-medium text-gray-800">Voice options:</span>
+                                <span class="text-gray-700"> 3 premium voices available</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 mr-3 mt-0.5 text-blue-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            <div>
+                                <span class="font-medium text-gray-800">Text length:</span>
+                                <span class="text-gray-700"> Maximum 1,000 characters per request</span>
                             </div>
                         </li>
                     </ul>
@@ -421,8 +431,8 @@ with open("speech.wav", "wb") as f:
 const apiKey = "your_api_key_here";
 
 // Synthesize Speech
-async function synthesizeSpeech(text) {
-  const response = await fetch("https://apispeaksynth.publicvm.com/speaksynth/api/v1/synthesize", {
+async function synthesizeSpeech(text, voice = "sabrina") {
+  const response = await fetch("https://speaksynth.onrender.com/speaksynth/api/v1/synthesize", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -430,7 +440,8 @@ async function synthesizeSpeech(text) {
     },
     body: JSON.stringify({
       text: text,
-      format: 1  // 1 = WAV, 2 = OPUS
+      format: 1,  // 1 = WAV, 2 = OPUS
+      voice: voice  // "sabrina", "paul", or "morgan"
     })
   });
   
@@ -442,8 +453,10 @@ async function synthesizeSpeech(text) {
   audio.play();
 }
 
-// Example usage
-synthesizeSpeech("Hello world!");</code></pre>
+// Example usage with different voices
+synthesizeSpeech("Hello world!", "sabrina");  // Default bright voice
+synthesizeSpeech("Welcome to the future.", "paul");    // Jarvis-style
+synthesizeSpeech("In a world of infinite possibilities...", "morgan"); // Deep authoritative</code></pre>
                         </div>
                     </div>
                 </div>

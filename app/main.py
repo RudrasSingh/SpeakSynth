@@ -103,7 +103,7 @@ async def register_key(user: UserRegistration):
         return JSONResponse(content={
             "message": message,
             "api_key": result["api_key"],
-            "daily_limit": 50,
+            "daily_limit": 15,
             "note": "Store this key securely." if result["is_new"] else "Your existing API key has been retrieved."
         })
 
@@ -243,7 +243,7 @@ async def synthesize_speech(
     _ = Depends(verify_api_key),
     __ = Depends(enforce_daily_limit)
 ):
-    """Convert text to speech using AI."""
+    """Converts text to speech using AI with multiple voice options."""
     if not request.text:
         raise HTTPException(
             status_code=400, 
@@ -254,13 +254,34 @@ async def synthesize_speech(
         )
 
     try:
+        file_path = None
+        
+        # Voice-specific audio prompts
+        voice_prompts = {
+            "sabrina": "https://raw.githubusercontent.com/RudrasSingh/playlist-randomizer/bd4afeb10611ad36529691440a914fcfb6a28dfd/Sabrina%20Carpenter%20Answers%20the%20Web's%20Most%20Searched%20Questions%20%20WIRED.mp3",
+            "paul": "https://raw.githubusercontent.com/RudrasSingh/playlist-randomizer/01a0c1c56efb4c47cc4fa660adc4313edc052673/Paul%20Bettany%20Of%20Manhunt_%20UNABOMBER%20Shares%20Some%20Of%20The%20Questions%20He%20Has%20For%20Ted%20Kaczynski.mp3",
+            "morgan": "https://raw.githubusercontent.com/RudrasSingh/playlist-randomizer/01a0c1c56efb4c47cc4fa660adc4313edc052673/ande.mp3"
+        }
+        
+        # Get the appropriate audio prompt for the selected voice
+        audio_prompt = voice_prompts.get(request.voice, voice_prompts["sabrina"])
+        
+        # Voice-specific parameters for better quality
+        voice_params = {
+            "sabrina": {"exaggeration": 0.6, "temperature": 0.8, "cfgw": 0.5},
+            "paul": {"exaggeration": 0.4, "temperature": 0.7, "cfgw": 0.6},     # More controlled for Jarvis-like voice
+            "morgan": {"exaggeration": 0.5, "temperature": 0.85, "cfgw": 0.45}
+        }
+        
+        params = voice_params.get(request.voice, voice_params["sabrina"])
+        
         result = client.predict(
             text_input=request.text,
-            audio_prompt_path_input=handle_file("https://raw.githubusercontent.com/RudrasSingh/playlist-randomizer/bd4afeb10611ad36529691440a914fcfb6a28dfd/Sabrina%20Carpenter%20Answers%20the%20Web's%20Most%20Searched%20Questions%20%20WIRED.mp3"),
-            exaggeration_input=0.6,
-            temperature_input=0.8,
+            audio_prompt_path_input=handle_file(audio_prompt),
+            exaggeration_input=params["exaggeration"],
+            temperature_input=params["temperature"],
             seed_num_input=0,
-            cfgw_input=0.5,
+            cfgw_input=params["cfgw"],
             api_name="/generate_tts_audio"
         )
 
@@ -271,7 +292,7 @@ async def synthesize_speech(
         
         if request.format == AudioFormat.WAV:
             background_tasks.add_task(cleanup, wav_path)
-            return FileResponse(wav_path, media_type="audio/wav", filename="speaksynth_output.wav")
+            return FileResponse(wav_path, media_type="audio/wav", filename=f"speaksynth_{request.voice}_output.wav")
 
         opus_fd, opus_path = tempfile.mkstemp(suffix=".opus")
         os.close(opus_fd)
@@ -281,7 +302,7 @@ async def synthesize_speech(
         background_tasks.add_task(cleanup, wav_path)  # Clean up WAV file
         background_tasks.add_task(cleanup, opus_path)  # Clean up OPUS file
 
-        return FileResponse(opus_path, media_type="audio/ogg", filename="speaksynth_output.opus")
+        return FileResponse(opus_path, media_type="audio/ogg", filename=f"speaksynth_{request.voice}_output.opus")
         
     except Exception as e:
         error_message = str(e)
@@ -369,20 +390,18 @@ async def check_usage(
             
         count, last_used = user
         
-        # SQLite will store dates as strings, so we need to convert
         if isinstance(last_used, str):
             last_used = datetime.strptime(last_used, "%Y-%m-%d").date()
         elif isinstance(last_used, datetime):
             last_used = last_used.date()
             
-        # If it's a new day, the count should be reset
         if last_used != today:
             count = 0
             
         return JSONResponse(content={
             "daily_usage": count,
-            "daily_limit": 50,
-            "remaining": 50 - count,
+            "daily_limit": 15,
+            "remaining": 15 - count,
             "date": str(today)
         })
         
